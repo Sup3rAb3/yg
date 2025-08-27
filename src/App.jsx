@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Rocket } from 'lucide-react';
+import logo from './assets/logo.png';
 import '@fontsource-variable/inter';
 import './App.css';
 import './index.css';
@@ -12,7 +13,7 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 font-sans" style={{ fontFamily: 'InterVariable, sans-serif' }}>
       {/* Navigation */}
       <nav className="flex justify-between items-center px-8 py-6 bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30">
-        <span className="text-2xl font-extrabold text-black tracking-tight">YourBrand</span>
+  <img src={logo} alt="yellowgray Logo" className="h-10 w-auto" />
         <ul className="flex gap-8 text-gray-700 font-medium">
           <li className="hover:text-yellow-400 transition-colors cursor-pointer">Home</li>
           <li className="hover:text-yellow-400 transition-colors cursor-pointer">About</li>
@@ -29,7 +30,7 @@ function App() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="text-6xl md:text-7xl font-extrabold text-black mb-6 leading-tight drop-shadow"
         >
-          Welcome to <span className="text-yellow-400">YourBrand</span>
+          Welcome to <img src={logo} alt="yellowgray Logo" className="inline h-20 align-middle mx-2" />
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
