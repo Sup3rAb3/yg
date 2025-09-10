@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion';
 import logo from './assets/logo.png';
+import whitelogo from './assets/logo_white.png';
 import '@fontsource-variable/inter';
 import './App.css';
 import './index.css';
@@ -251,7 +252,7 @@ function App() {
           transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
           className="px-6 sm:px-10 py-3 sm:py-4 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-300 text-base sm:text-xl"
         >
-          Learn More
+          Contact Us
         </motion.button>
       </main>
 
@@ -330,6 +331,191 @@ function App() {
           ))}
         </div>
       </section>
+
+      {/* Contact Section */}
+      <section className="py-20 px-4 text-center bg-transparent relative z-10 max-w-screen-xl mx-auto">
+        <motion.h3
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8 }}
+          className="text-3xl sm:text-4xl font-bold text-black mb-4"
+        >
+          Get in Touch
+        </motion.h3>
+        
+        <div className="w-20 h-1 bg-yellow-400 mx-auto mb-8"></div>
+
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
+          className="bg-white shadow-xl rounded-3xl p-8 sm:p-12 max-w-2xl mx-auto relative overflow-hidden" // Added relative & overflow-hidden
+        >
+          {/* Mouse-responsive icons container */}
+          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+            <motion.div
+              className="absolute w-8 h-8 text-yellow-500/30"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+              style={{ x: -100, y: -80 }}
+            >
+              <i data-feather="mail" className="w-full h-full"></i>
+            </motion.div>
+            <motion.div
+              className="absolute w-6 h-6 text-gray-400/30"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+              style={{ x: 120, y: 40 }}
+            >
+              <i data-feather="phone" className="w-full h-full"></i>
+            </motion.div>
+            <motion.div
+              className="absolute w-7 h-7 text-yellow-500/30"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
+              style={{ x: -150, y: 100 }}
+            >
+              <i data-feather="message-square" className="w-full h-full"></i>
+            </motion.div>
+            <motion.div
+              className="absolute w-6 h-6 text-gray-400/30"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
+              style={{ x: 160, y: -120 }}
+            >
+              <i data-feather="at-sign" className="w-full h-full"></i>
+            </motion.div>
+          </div>
+          
+          {/* Form Content (z-index ensures it's on top) */}
+          <form className="space-y-6 relative z-10">
+            <div>
+              <label htmlFor="name" className="block text-left text-sm font-medium text-gray-700 mb-1">Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                placeholder="Your Name" 
+                className="w-full px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors text-black" 
+                required 
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-left text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                placeholder="Your Email" 
+                className="w-full px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors text-black" 
+                required 
+              />
+            </div>
+            <div>
+              <label htmlFor="message" className="block text-left text-sm font-medium text-gray-700 mb-1">Message</label>
+              <textarea 
+                id="message" 
+                name="message" 
+                rows="4" 
+                placeholder="Your Message" 
+                className="w-full px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors text-black" 
+                required 
+              ></textarea>
+            </div>
+            <motion.button
+              type="submit"
+              whileHover={{ 
+                scale: 1.05, 
+                boxShadow: '0 8px 15px rgba(250, 204, 21, 0.4)' 
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full px-6 py-4 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-md hover:bg-black hover:text-yellow-400 transition-all duration-300"
+            >
+              Send Message
+            </motion.button>
+          </form>
+        </motion.div>
+      </section>
+
+      {/* Footer */}
+      <motion.footer 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.8 }}
+        className="w-full bg-black text-gray-400 py-10 relative z-20"
+      >
+        <div className="max-w-screen-xl mx-auto px-4 text-center">
+          <div className="flex flex-col items-center">
+            {/* Logo and Name */}
+            <motion.a 
+              href="#" 
+              className="flex items-center justify-center mb-4"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
+              <img src={whitelogo} alt="yellowgray Logo" className="h-8 w-auto mr-2" />
+
+            </motion.a>
+
+            {/* Navigation Links */}
+            <ul className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-4 font-medium">
+              {['Home', 'About', 'Work', 'Contact'].map((item) => (
+                <motion.li
+                  key={item}
+                  className="hover:text-yellow-400 transition-colors cursor-pointer"
+                  whileHover={{ scale: 1.05, color: '#facc15' }}
+                >
+                  {item}
+                </motion.li>
+              ))}
+            </ul>
+
+            {/* Social Media Icons */}
+            <div className="flex justify-center gap-6 mb-4">
+              <motion.a 
+                href="#" 
+                aria-label="Facebook"
+                className="text-gray-400 hover:text-yellow-400 transition-colors"
+                whileHover={{ y: -3 }}
+              >
+                <i data-feather="facebook" className="w-6 h-6"></i>
+              </motion.a>
+              <motion.a 
+                href="#" 
+                aria-label="Twitter"
+                className="text-gray-400 hover:text-yellow-400 transition-colors"
+                whileHover={{ y: -3 }}
+              >
+                <i data-feather="twitter" className="w-6 h-6"></i>
+              </motion.a>
+              <motion.a 
+                href="#" 
+                aria-label="LinkedIn"
+                className="text-gray-400 hover:text-yellow-400 transition-colors"
+                whileHover={{ y: -3 }}
+              >
+                <i data-feather="linkedin" className="w-6 h-6"></i>
+              </motion.a>
+              <motion.a 
+                href="#" 
+                aria-label="Instagram"
+                className="text-gray-400 hover:text-yellow-400 transition-colors"
+                whileHover={{ y: -3 }}
+              >
+                <i data-feather="instagram" className="w-6 h-6"></i>
+              </motion.a>
+            </div>
+
+            {/* Copyright */}
+            <p className="text-sm text-gray-500 mt-2">
+              © {new Date().getFullYear()}. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </motion.footer>
 
       {/* Custom Cursor (always visible) */}
       <div className="pointer-events-none fixed top-0 left-0 w-full h-full z-50 hidden sm:block">
