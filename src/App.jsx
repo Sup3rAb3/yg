@@ -3,8 +3,8 @@ import logo from './assets/logo.png';
 import '@fontsource-variable/inter';
 import './App.css';
 import './index.css';
-import { useEffect, useRef } from 'react';
-import feather from 'feather-icons'; // Import Feather Icons
+import { useEffect, useRef, useState } from 'react';
+import feather from 'feather-icons';
 
 function App() {
   // Custom cursor
@@ -16,18 +16,10 @@ function App() {
 
   // Services scroll-linked motion values
   const servicesRef = useRef(null);
-  const { scrollYProgress: servicesProgress } = useScroll({
+  const { scrollYProgress } = useScroll({
     target: servicesRef,
     offset: ['start end', 'end start'],
   });
-
-  // Subtle parallax for cards (less aggressive than before)
-  const translateYVals = [
-    useTransform(servicesProgress, [0, 1], [10, -10]),
-    useTransform(servicesProgress, [0, 1], [-10, 10]),
-    useTransform(servicesProgress, [0, 1], [5, -5]),
-    useTransform(servicesProgress, [0, 1], [-5, 5]),
-  ];
 
   useEffect(() => {
     // Initialize Feather Icons
@@ -44,8 +36,11 @@ function App() {
 
   // Parallax for hero
   const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: heroRef });
-  const yParallax = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const { scrollYProgress: heroProgress } = useScroll({ target: heroRef });
+  const yParallax = useTransform(heroProgress, [0, 1], [0, -50]);
+
+  // State for hamburger menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div
@@ -81,7 +76,7 @@ function App() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-3 sm:py-6 bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50 w-full"
+        className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 py-2 sm:py-3 bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50 w-full max-w-screen-xl mx-auto"
       >
         <button
           onClick={() => window.location.reload()}
@@ -92,16 +87,53 @@ function App() {
           <motion.img
             src={logo}
             alt="yellowgray Logo"
-            className="h-8 sm:h-10 w-auto mb-2 sm:mb-0"
+            className="h-8 sm:h-10 w-auto"
             whileHover={{ scale: 1.1, rotate: 5 }}
             transition={{ duration: 0.3 }}
           />
         </button>
-        <ul className="flex flex-col sm:flex-row gap-1 sm:gap-8 text-gray-700 font-medium w-full sm:w-auto items-center text-sm sm:text-base">
+        <div className="sm:hidden relative">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="focus:outline-none p-2 ml-auto"
+            aria-label="Toggle Menu"
+          >
+            <svg
+              className="w-6 h-6 stroke-black"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d={isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16m-7 6h7'}
+              />
+            </svg>
+          </button>
+          {isMenuOpen && (
+            <ul className="absolute top-12 right-2 bg-white/90 backdrop-blur-lg shadow-md rounded-md p-2 w-32">
+              {['Home', 'About', 'Work', 'Contact'].map((item) => (
+                <motion.li
+                  key={item}
+                  className="hover:text-yellow-400 transition-colors cursor-pointer px-3 py-1 rounded-full hover:bg-gray-100/50 text-gray-700 text-center"
+                  whileHover={{ scale: 1.05, color: '#facc15' }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item}
+                </motion.li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <ul className="hidden sm:flex flex-row gap-8 text-gray-700 font-medium items-center text-base">
           {['Home', 'About', 'Work', 'Contact'].map((item) => (
             <motion.li
               key={item}
-              className="hover:text-yellow-400 transition-colors cursor-pointer px-3 py-1 sm:px-4 sm:py-2 rounded-full hover:bg-gray-100/50"
+              className="hover:text-yellow-400 transition-colors cursor-pointer px-4 py-2 rounded-full hover:bg-gray-100/50"
               whileHover={{ scale: 1.05, color: '#facc15' }}
               transition={{ duration: 0.2 }}
             >
@@ -111,17 +143,76 @@ function App() {
         </ul>
       </motion.nav>
 
-      {/* Hero */}
+      {/* Hero with Orbiting Shapes */}
       <main
         ref={heroRef}
-        className="flex flex-col items-center justify-center min-h-[70vh] sm:min-h-screen py-8 sm:py-16 px-4 text-center relative w-full z-10"
+        className="flex flex-col items-center justify-center min-h-[50vh] sm:min-h-[70vh] py-3 sm:py-4 px-4 text-center relative w-full z-10 max-w-screen-xl mx-auto"
+        style={{ y: yParallax }}
       >
+        {/* Orbiting Shapes (behind text, around logo) */}
+        <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+          <motion.div
+            className="absolute w-6 h-6 bg-yellow-400/30 rounded-full blur-sm"
+            animate={{
+              x: [
+                -40,
+                40 * Math.cos(0),
+                40 * Math.cos(Math.PI / 2),
+                40 * Math.cos(Math.PI),
+                40 * Math.cos((3 * Math.PI) / 2),
+                -40,
+              ],
+              y: [
+                0,
+                20 * Math.sin(0), // Reduced y-radius for a more elliptical shape
+                20 * Math.sin(Math.PI / 2),
+                20 * Math.sin(Math.PI),
+                20 * Math.sin((3 * Math.PI) / 2),
+                0,
+              ],
+              rotate: 360,
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+          <motion.div
+            className="absolute w-8 h-8 bg-gray-300/20 rounded-full blur-sm"
+            animate={{
+              x: [
+                -50,
+                50 * Math.cos(0),
+                50 * Math.cos(Math.PI / 2),
+                50 * Math.cos(Math.PI),
+                50 * Math.cos((3 * Math.PI) / 2),
+                -50,
+              ],
+              y: [
+                0,
+                25 * Math.sin(0), // Reduced y-radius for a more elliptical shape
+                25 * Math.sin(Math.PI / 2),
+                25 * Math.sin(Math.PI),
+                25 * Math.sin((3 * Math.PI) / 2),
+                0,
+              ],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+        </div>
+
         <motion.h1
-          initial={{ opacity: 0, y: 100 }}
+          initial={{ opacity: 0, y: 0 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
+          viewport={{ once: true, amount: 0 }}
           transition={{ duration: 1.2, ease: 'easeOut' }}
-          className="text-4xl sm:text-7xl md:text-9xl font-black text-black mb-6 sm:mb-8 leading-none drop-shadow-lg break-words tracking-tight"
+          className="text-4xl sm:text-7xl md:text-9xl font-black text-black mb-4 sm:mb-6 leading-none drop-shadow-lg break-words tracking-tight relative"
         >
           <motion.span className="flex items-center justify-center">Choose{' '}</motion.span>
           <motion.img
@@ -135,16 +226,16 @@ function App() {
           />
         </motion.h1>
         <motion.p
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 0 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
-          className="text-base sm:text-2xl md:text-3xl text-gray-700 max-w-md sm:max-w-2xl md:max-w-4xl mb-8 sm:mb-12 leading-relaxed text-center"
+          className="text-base sm:text-2xl md:text-3xl text-gray-700 max-w-md sm:max-w-2xl md:max-w-4xl mb-4 sm:mb-6 leading-relaxed text-center"
         >
           We specialize in providing tailored IT solutions for small businesses, schools, and growing organizations.
           <br />
           Our services include expert IT consultation, reliable support, and comprehensive equipment supply.
           <br />
-          <span className="text-gray-500 text-sm sm:text-xl md:text-2xl block mt-2 sm:mt-4">
+          <span className="text-gray-500 text-sm sm:text-xl md:text-2xl block mt-1 sm:mt-2">
             We make technology simple, affordable, and effective—so you can focus on what matters most.
           </span>
         </motion.p>
@@ -155,7 +246,7 @@ function App() {
             boxShadow: '0 10px 20px rgba(250, 204, 21, 0.3)',
           }}
           whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 0 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
           className="px-6 sm:px-10 py-3 sm:py-4 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-300 text-base sm:text-xl"
@@ -167,20 +258,21 @@ function App() {
       {/* Services */}
       <section
         ref={servicesRef}
-        className="py-16 px-4 text-center bg-transparent relative z-10"
+        className="py-6 px-4 text-center bg-transparent relative z-10 max-w-screen-xl mx-auto"
       >
         <motion.h3
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 0 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0 }}
           transition={{ duration: 0.8 }}
           className="text-3xl sm:text-4xl font-bold text-black mb-4"
         >
           Our Core Business Model Includes...
         </motion.h3>
 
-        <div className="w-20 h-1 bg-yellow-400 mx-auto mb-12"></div>
+        <div className="w-20 h-1 bg-yellow-400 mx-auto mb-4"></div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
               title: 'IT Consultation & Support',
@@ -209,38 +301,29 @@ function App() {
           ].map((item, i) => (
             <motion.div
               key={item.title}
-              // Initial state: slightly rotated and below
-              initial={{ opacity: 0, y: 50 }}
-              // Aminamte in when in view: lift, and fade in
+              initial={{ opacity: 0, y: 0 }}
               whileInView={{
                 opacity: 1,
                 y: 0,
-                rotate: 0,
                 transition: {
                   type: 'spring',
                   stiffness: 100,
                   damping: 20,
-                  delay: i * 0.1, // Staggered entry
+                  delay: i * 0.1,
                 },
               }}
-              // Subtle scroll-based parallax
-              style={{ y: translateYVals[i] }}
-              // Hover effect: lift and straighten
-              whileHover={{ scale: 1.03, y: -6 }}
-              viewport={{ once: true, amount: 0.3 }} // Trigger when 30% of card is visible
+              whileHover={{ scale: 1.03 }}
+              viewport={{ once: true, amount: 0 }}
               className="bg-white shadow-lg rounded-2xl p-6 transform transition-all will-change-transform"
             >
               <motion.div
-                // Icon micro-animation
-                initial={{ rotate: 0 }}
-                whileInView={{ rotate: [0, 10, 0] }}
-                whileHover={{ rotate: 12 }}
-                transition={{ duration: 0.6 }}
                 className="text-yellow-500 mb-4"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: i * 0.1 }}
               >
                 <i data-feather={item.icon} className="w-10 h-10 mx-auto"></i>
               </motion.div>
-
               <h4 className="text-xl font-semibold mb-2 text-gray-900">{item.title}</h4>
               <p className="text-gray-600">{item.desc}</p>
             </motion.div>
