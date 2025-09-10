@@ -91,6 +91,7 @@ function App() {
             className="h-8 sm:h-10 w-auto"
             whileHover={{ scale: 1.1, rotate: 5 }}
             transition={{ duration: 0.3 }}
+            style={{ transform: 'translateZ(0)' }}
           />
         </button>
         <div className="sm:hidden relative">
@@ -123,6 +124,7 @@ function App() {
                   whileHover={{ scale: 1.05, color: '#facc15' }}
                   transition={{ duration: 0.2 }}
                   onClick={() => setIsMenuOpen(false)}
+                  style={{ transform: 'translateZ(0)' }}
                 >
                   {item}
                 </motion.li>
@@ -137,6 +139,7 @@ function App() {
               className="hover:text-yellow-400 transition-colors cursor-pointer px-4 py-2 rounded-full hover:bg-gray-100/50"
               whileHover={{ scale: 1.05, color: '#facc15' }}
               transition={{ duration: 0.2 }}
+              style={{ transform: 'translateZ(0)' }}
             >
               {item}
             </motion.li>
@@ -155,22 +158,8 @@ function App() {
           <motion.div
             className="absolute w-6 h-6 bg-yellow-400/30 rounded-full blur-sm"
             animate={{
-              x: [
-                -40,
-                40 * Math.cos(0),
-                40 * Math.cos(Math.PI / 2),
-                40 * Math.cos(Math.PI),
-                40 * Math.cos((3 * Math.PI) / 2),
-                -40,
-              ],
-              y: [
-                0,
-                20 * Math.sin(0), // Reduced y-radius for a more elliptical shape
-                20 * Math.sin(Math.PI / 2),
-                20 * Math.sin(Math.PI),
-                20 * Math.sin((3 * Math.PI) / 2),
-                0,
-              ],
+              x: [-40, 0, 40, 0, -40],
+              y: [0, 20, 0, -20, 0],
               rotate: 360,
             }}
             transition={{
@@ -182,22 +171,8 @@ function App() {
           <motion.div
             className="absolute w-8 h-8 bg-gray-300/20 rounded-full blur-sm"
             animate={{
-              x: [
-                -50,
-                50 * Math.cos(0),
-                50 * Math.cos(Math.PI / 2),
-                50 * Math.cos(Math.PI),
-                50 * Math.cos((3 * Math.PI) / 2),
-                -50,
-              ],
-              y: [
-                0,
-                25 * Math.sin(0), // Reduced y-radius for a more elliptical shape
-                25 * Math.sin(Math.PI / 2),
-                25 * Math.sin(Math.PI),
-                25 * Math.sin((3 * Math.PI) / 2),
-                0,
-              ],
+              x: [-50, 0, 50, 0, -50],
+              y: [0, 25, 0, -25, 0],
               scale: [1, 1.2, 1],
             }}
             transition={{
@@ -214,6 +189,7 @@ function App() {
           viewport={{ once: true, amount: 0 }}
           transition={{ duration: 1.2, ease: 'easeOut' }}
           className="text-4xl sm:text-7xl md:text-9xl font-black text-black mb-4 sm:mb-6 leading-none drop-shadow-lg break-words tracking-tight relative"
+          style={{ transform: 'translateZ(0)' }}
         >
           <motion.span className="flex items-center justify-center">Choose{' '}</motion.span>
           <motion.img
@@ -223,7 +199,7 @@ function App() {
             initial={{ scale: 0.8, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
-            style={{ verticalAlign: 'middle' }}
+            style={{ verticalAlign: 'middle', transform: 'translateZ(0)' }}
           />
         </motion.h1>
         <motion.p
@@ -231,6 +207,7 @@ function App() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
           className="text-base sm:text-2xl md:text-3xl text-gray-700 max-w-md sm:max-w-2xl md:max-w-4xl mb-4 sm:mb-6 leading-relaxed text-center"
+          style={{ transform: 'translateZ(0)' }}
         >
           We specialize in providing tailored IT solutions for small businesses, schools, and growing organizations.
           <br />
@@ -242,7 +219,7 @@ function App() {
         </motion.p>
         <motion.button
           whileHover={{
-            scale: 1.15,
+            scale: 1.1,
             rotate: 2,
             boxShadow: '0 10px 20px rgba(250, 204, 21, 0.3)',
           }}
@@ -251,6 +228,7 @@ function App() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
           className="px-6 sm:px-10 py-3 sm:py-4 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-300 text-base sm:text-xl"
+          style={{ transform: 'translateZ(0)' }}
         >
           Contact Us
         </motion.button>
@@ -267,6 +245,7 @@ function App() {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8 }}
           className="text-3xl sm:text-4xl font-bold text-black mb-4"
+          style={{ transform: 'translateZ(0)' }}
         >
           Our Core Business Model Includes...
         </motion.h3>
@@ -304,10 +283,11 @@ function App() {
               transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
               whileHover={{
                 scale: 1.03,
-                y: -5, // Changed to Framer Motion's "y" property
+                y: -6,
                 boxShadow: '0 15px 30px rgba(0,0,0,0.12)',
               }}
-              className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-yellow-400 transition-all duration-300 cursor-pointer will-change-transform" // Added will-change-transform
+              className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-yellow-400 transition-all duration-300 cursor-pointer will-change-transform"
+              style={{ transform: 'translateZ(0)' }}
             >
               <div className="bg-yellow-400/10 p-4 rounded-xl mb-4 inline-block">
                 <i
@@ -315,16 +295,18 @@ function App() {
                   className="w-10 h-10 mx-auto text-yellow-500"
                 ></i>
               </div>
-              <h4 className="text-xl font-bold mb-2 text-gray-900">
+              <h4 className="text-xl font-bold mb-2 text-gray-900" style={{ transform: 'translateZ(0)' }}>
                 {item.title}
               </h4>
-              <p className="text-gray-700 leading-relaxed">{item.desc}</p>
+              <p className="text-gray-700 leading-relaxed" style={{ transform: 'translateZ(0)' }}>
+                {item.desc}
+              </p>
             </motion.div>
           ))}
         </div>
       </section>
 
-          {/* Updated About Us Section */}
+      {/* Updated About Us Section */}
       <section className="py-20 px-4 bg-gradient-to-br from-gray-50 to-gray-100 relative z-10 max-w-screen-xl mx-auto rounded-3xl shadow-xl">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
           {/* Left Column: Why Choose Yellow Gray */}
@@ -335,6 +317,7 @@ function App() {
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.8 }}
               className="text-3xl sm:text-4xl font-bold text-black mb-4"
+              style={{ transform: 'translateZ(0)' }}
             >
               Why Choose Yellow Gray
             </motion.h3>
@@ -345,19 +328,17 @@ function App() {
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-lg sm:text-xl text-gray-700 mb-8 leading-relaxed"
+              style={{ transform: 'translateZ(0)' }}
             >
               We are a dedicated team passionate about making technology accessible and efficient for businesses and educational institutions. Our journey began with a simple belief: that technology should be a solution, not a problem. Our headquarters is located in Lusaka, Zambia, serving the local community and beyond.
-              
             </motion.p>
-            
-            
-            {/* Our Story Below Why Choose Us */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-lg sm:text-xl text-gray-700 leading-relaxed"
+              style={{ transform: 'translateZ(0)' }}
             >
               <p>
                 With a deep understanding of the challenges small organizations face, we are committed to helping you stay ahead of the curve with innovative IT solutions. Whether you're scaling your business or optimizing your current setup, we’re here to provide the support and tools you need to succeed in a fast-evolving digital landscape.
@@ -384,21 +365,25 @@ function App() {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.5 }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
-                  whileHover={{ y: -5, boxShadow: '0 15px 30px rgba(0,0,0,0.1)', scale: 1.05 }}
+                  whileHover={{ y: -6, boxShadow: '0 15px 30px rgba(0,0,0,0.1)', scale: 1.05 }}
                   className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 cursor-pointer transition-all duration-300 transform-gpu will-change-transform"
+                  style={{ transform: 'translateZ(0)' }}
                 >
                   <div className="flex justify-center md:justify-start items-center mb-4">
                     <div className="bg-yellow-400 p-3 rounded-xl mr-4 shadow-sm">
                       <i data-feather={item.icon} className="text-white w-7 h-7"></i>
                     </div>
                   </div>
-                  <p className="text-gray-800 font-bold text-lg">{item.title}</p>
+                  <p className="text-gray-800 font-bold text-lg" style={{ transform: 'translateZ(0)' }}>
+                    {item.title}
+                  </p>
                 </motion.div>
               ))}
             </div>
           </div>
         </div>
       </section>
+
       {/* Contact info Section */}
       <section className="py-20 px-4 text-center bg-transparent relative z-10 max-w-screen-xl mx-auto">
         <motion.h3
@@ -407,6 +392,7 @@ function App() {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8 }}
           className="text-3xl sm:text-4xl font-bold text-black mb-4"
+          style={{ transform: 'translateZ(0)' }}
         >
           Get in Touch
         </motion.h3>
@@ -418,7 +404,7 @@ function App() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
-          className="bg-white shadow-xl rounded-3xl p-8 sm:p-12 max-w-2xl mx-auto relative overflow-hidden" // Added relative & overflow-hidden
+          className="bg-white shadow-xl rounded-3xl p-8 sm:p-12 max-w-2xl mx-auto relative overflow-hidden"
         >
           {/* Mouse-responsive icons container */}
           <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
@@ -499,6 +485,7 @@ function App() {
               }}
               whileTap={{ scale: 0.95 }}
               className="w-full px-6 py-4 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-md hover:bg-black hover:text-yellow-400 transition-all duration-300"
+              style={{ transform: 'translateZ(0)' }}
             >
               Submit
             </motion.button>
@@ -522,9 +509,9 @@ function App() {
               className="flex items-center justify-center mb-4"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
+              style={{ transform: 'translateZ(0)' }}
             >
               <img src={whitelogo} alt="yellowgray Logo" className="h-8 w-auto mr-2" />
-
             </motion.a>
 
             {/* Navigation Links */}
@@ -534,6 +521,7 @@ function App() {
                   key={item}
                   className="hover:text-yellow-400 transition-colors cursor-pointer"
                   whileHover={{ scale: 1.05, color: '#facc15' }}
+                  style={{ transform: 'translateZ(0)' }}
                 >
                   {item}
                 </motion.li>
@@ -546,7 +534,8 @@ function App() {
                 href="#" 
                 aria-label="Facebook"
                 className="text-gray-400 hover:text-yellow-400 transition-colors"
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -4 }}
+                style={{ transform: 'translateZ(0)' }}
               >
                 <i data-feather="facebook" className="w-6 h-6"></i>
               </motion.a>
@@ -554,7 +543,8 @@ function App() {
                 href="#" 
                 aria-label="Twitter"
                 className="text-gray-400 hover:text-yellow-400 transition-colors"
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -4 }}
+                style={{ transform: 'translateZ(0)' }}
               >
                 <i data-feather="twitter" className="w-6 h-6"></i>
               </motion.a>
@@ -562,7 +552,8 @@ function App() {
                 href="#" 
                 aria-label="LinkedIn"
                 className="text-gray-400 hover:text-yellow-400 transition-colors"
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -4 }}
+                style={{ transform: 'translateZ(0)' }}
               >
                 <i data-feather="linkedin" className="w-6 h-6"></i>
               </motion.a>
@@ -570,7 +561,8 @@ function App() {
                 href="#" 
                 aria-label="Instagram"
                 className="text-gray-400 hover:text-yellow-400 transition-colors"
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -4 }}
+                style={{ transform: 'translateZ(0)' }}
               >
                 <i data-feather="instagram" className="w-6 h-6"></i>
               </motion.a>
