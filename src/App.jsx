@@ -259,78 +259,71 @@ function App() {
       {/* Services */}
       <section
         ref={servicesRef}
-        className="py-6 px-4 text-center bg-transparent relative z-10 max-w-screen-xl mx-auto"
+        className="py-6 px-4 text-center relative z-10 max-w-screen-xl mx-auto"
       >
         <motion.h3
-          initial={{ opacity: 0, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8 }}
           className="text-3xl sm:text-4xl font-bold text-black mb-4"
         >
           Our Core Business Model Includes...
         </motion.h3>
 
-        <div className="w-20 h-1 bg-yellow-400 mx-auto mb-4"></div>
+        <div className="w-20 h-1 bg-yellow-400 mx-auto mb-8"></div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
               title: 'IT Consultation & Support',
-              desc:
-                'Expert IT consultation and support to optimize your technology and resolve issues efficiently.',
+              desc: 'Expert IT consultation and support to optimize your technology and resolve issues efficiently.',
               icon: 'message-circle',
             },
             {
               title: 'Web Development & Hosting',
-              desc:
-                'Modern, secure web apps and hosting to elevate your online presence and reliability.',
+              desc: 'Modern, secure web apps and hosting to elevate your online presence and reliability.',
               icon: 'code',
             },
             {
               title: 'Supply of IT Equipment',
-              desc:
-                'Dependable procurement and provisioning of core IT equipment for businesses and schools.',
+              desc: 'Dependable procurement and provisioning of core IT equipment for businesses and schools.',
               icon: 'truck',
             },
             {
               title: 'Device Repair & Maintenance',
-              desc:
-                'Fast, professional device repair and maintenance to keep your operations running smoothly.',
+              desc: 'Fast, professional device repair and maintenance to keep your operations running smoothly.',
               icon: 'settings',
             },
           ].map((item, i) => (
             <motion.div
               key={item.title}
-              initial={{ opacity: 0, y: 0 }}
-              whileInView={{
-                opacity: 1,
-                y: 0,
-                transition: {
-                  type: 'spring',
-                  stiffness: 100,
-                  damping: 20,
-                  delay: i * 0.1,
-                },
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
+              whileHover={{
+                scale: 1.03,
+                y: -5, // Changed to Framer Motion's "y" property
+                boxShadow: '0 15px 30px rgba(0,0,0,0.12)',
               }}
-              whileHover={{ scale: 1.03 }}
-              viewport={{ once: true, amount: 0 }}
-              className="bg-white shadow-lg rounded-2xl p-6 transform transition-all will-change-transform"
+              className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-yellow-400 transition-all duration-300 cursor-pointer will-change-transform" // Added will-change-transform
             >
-              <motion.div
-                className="text-yellow-500 mb-4"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <i data-feather={item.icon} className="w-10 h-10 mx-auto"></i>
-              </motion.div>
-              <h4 className="text-xl font-semibold mb-2 text-gray-900">{item.title}</h4>
-              <p className="text-gray-600">{item.desc}</p>
+              <div className="bg-yellow-400/10 p-4 rounded-xl mb-4 inline-block">
+                <i
+                  data-feather={item.icon}
+                  className="w-10 h-10 mx-auto text-yellow-500"
+                ></i>
+              </div>
+              <h4 className="text-xl font-bold mb-2 text-gray-900">
+                {item.title}
+              </h4>
+              <p className="text-gray-700 leading-relaxed">{item.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
+
           {/* Updated About Us Section */}
       <section className="py-20 px-4 bg-gradient-to-br from-gray-50 to-gray-100 relative z-10 max-w-screen-xl mx-auto rounded-3xl shadow-xl">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
