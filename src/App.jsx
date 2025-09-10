@@ -331,8 +331,82 @@ function App() {
           ))}
         </div>
       </section>
+          {/* Updated About Us Section */}
+      <section className="py-20 px-4 bg-gradient-to-br from-gray-50 to-gray-100 relative z-10 max-w-screen-xl mx-auto rounded-3xl shadow-xl">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
+          {/* Left Column: Why Choose Yellow Gray */}
+          <div className="w-full lg:w-1/2 text-center lg:text-left">
+            <motion.h3
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.8 }}
+              className="text-3xl sm:text-4xl font-bold text-black mb-4"
+            >
+              Why Choose Yellow Gray
+            </motion.h3>
+            <div className="w-20 h-1 bg-yellow-400 mx-auto lg:mx-0 mb-8"></div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-lg sm:text-xl text-gray-700 mb-8 leading-relaxed"
+            >
+              We are a dedicated team passionate about making technology accessible and efficient for businesses and educational institutions. Our journey began with a simple belief: that technology should be a solution, not a problem. Our headquarters is located in Lusaka, Zambia, serving the local community and beyond.
+              
+            </motion.p>
+            
+            
+            {/* Our Story Below Why Choose Us */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="text-lg sm:text-xl text-gray-700 leading-relaxed"
+            >
+              <p>
+                With a deep understanding of the challenges small organizations face, we are committed to helping you stay ahead of the curve with innovative IT solutions. Whether you're scaling your business or optimizing your current setup, we’re here to provide the support and tools you need to succeed in a fast-evolving digital landscape.
+              </p>
+            </motion.div>
+          </div>
 
-      {/* Contact Section */}
+          {/* Right Column: Beautiful Cards with Icons */}
+          <div className="w-full lg:w-1/2 text-center lg:text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { title: 'Personalized IT Solutions', icon: 'zap' },
+                { title: 'Reliability and Support', icon: 'shield' },
+                { title: 'Innovation and Expertise', icon: 'award' },
+                { title: 'Commitment to Security', icon: 'lock' },
+                { title: 'Fostering Strong Relationships', icon: 'heart' },
+                { title: 'Trust and Transparency', icon: 'users' },
+                { title: 'Holistic IT Solutions', icon: 'grid' },
+                { title: 'Cost-Effective Services', icon: 'dollar-sign' },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  whileHover={{ y: -5, boxShadow: '0 15px 30px rgba(0,0,0,0.1)', scale: 1.05 }}
+                  className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 cursor-pointer transition-all duration-300 transform-gpu will-change-transform"
+                >
+                  <div className="flex justify-center md:justify-start items-center mb-4">
+                    <div className="bg-yellow-400 p-3 rounded-xl mr-4 shadow-sm">
+                      <i data-feather={item.icon} className="text-white w-7 h-7"></i>
+                    </div>
+                  </div>
+                  <p className="text-gray-800 font-bold text-lg">{item.title}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* Contact info Section */}
       <section className="py-20 px-4 text-center bg-transparent relative z-10 max-w-screen-xl mx-auto">
         <motion.h3
           initial={{ opacity: 0, y: 20 }}
