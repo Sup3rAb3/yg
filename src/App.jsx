@@ -433,7 +433,7 @@ function App() {
               whileTap={{ scale: 0.95 }}
               className="w-full px-6 py-4 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-md hover:bg-black hover:text-yellow-400 transition-all duration-300"
             >
-              Send Message
+              Submit
             </motion.button>
           </form>
         </motion.div>
