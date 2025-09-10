@@ -1,207 +1,262 @@
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion';
 import logo from './assets/logo.png';
 import '@fontsource-variable/inter';
 import './App.css';
 import './index.css';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import feather from 'feather-icons'; // Import Feather Icons
 
 function App() {
-  // Custom cursor position
+  // Custom cursor
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
   const springConfig = { damping: 25, stiffness: 700 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
 
-  // Update cursor position
+  // Services scroll-linked motion values
+  const servicesRef = useRef(null);
+  const { scrollYProgress: servicesProgress } = useScroll({
+    target: servicesRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Subtle parallax for cards (less aggressive than before)
+  const translateYVals = [
+    useTransform(servicesProgress, [0, 1], [10, -10]),
+    useTransform(servicesProgress, [0, 1], [-10, 10]),
+    useTransform(servicesProgress, [0, 1], [5, -5]),
+    useTransform(servicesProgress, [0, 1], [-5, 5]),
+  ];
+
   useEffect(() => {
+    // Initialize Feather Icons
+    feather.replace();
+
+    // Cursor movement
     const moveCursor = (e) => {
-      cursorX.set(e.clientX - 8); // Adjust for cursor size
+      cursorX.set(e.clientX - 8);
       cursorY.set(e.clientY - 8);
     };
-
     window.addEventListener('mousemove', moveCursor);
     return () => window.removeEventListener('mousemove', moveCursor);
   }, [cursorX, cursorY]);
 
+  // Parallax for hero
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: heroRef });
+  const yParallax = useTransform(scrollYProgress, [0, 1], [0, -50]);
+
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 font-sans"
+      className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 font-sans relative"
       style={{ fontFamily: 'InterVariable, sans-serif' }}
     >
-      {/* Navigation */}
-      <nav className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-4 sm:py-6 bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 w-full">
-        <img src={logo} alt="yellowgray Logo" className="h-10 w-auto mb-2 sm:mb-0" />
-        <ul className="flex flex-col sm:flex-row gap-2 sm:gap-8 text-gray-700 font-medium w-full sm:w-auto items-center">
-          <li className="hover:text-yellow-400 transition-colors cursor-pointer">Home</li>
-          <li className="hover:text-yellow-400 transition-colors cursor-pointer">About</li>
-          <li className="hover:text-yellow-400 transition-colors cursor-pointer">Work</li>
-          <li className="hover:text-yellow-400 transition-colors cursor-pointer">Contact</li>
-        </ul>
-      </nav>
-      {/* Background Shapes */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        {/* Circles */}
+      {/* Background Shapes - now full-page */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <motion.div
-          className="absolute w-24 h-24 rounded-full opacity-40 top-20 left-10"
-          animate={{ 
-            y: [0, 20, 0], 
-            scale: [1, 1.1, 1], 
-            backgroundColor: ['#facc15', '#9ca3af', '#facc15'] 
-          }}
-          transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
+          className="absolute w-64 h-64 opacity-20 blur-2xl top-20 left-10 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
+          animate={{ y: [0, 30, 0], scale: [1, 1.2, 1] }}
+          transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute w-32 h-32 rounded-full opacity-30 top-40 right-10"
-          animate={{ 
-            y: [0, -15, 0], 
-            rotate: [0, 360, 0], 
-            backgroundColor: ['#9ca3af', '#facc15', '#9ca3af'] 
-          }}
+          className="absolute w-72 h-72 opacity-15 blur-3xl top-1/2 right-10 bg-gradient-to-r from-gray-300 to-yellow-400 rounded-full"
+          animate={{ y: [0, -25, 0], scale: [1, 1.3, 1] }}
+          transition={{ repeat: Infinity, duration: 12, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute w-56 h-56 opacity-20 blur-2xl bottom-20 left-20 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
+          animate={{ x: [0, 20, 0], scale: [1, 1.1, 1] }}
           transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute w-16 h-16 rounded-full opacity-40 bottom-20 left-20"
-          animate={{ 
-            x: [0, 15, 0], 
-            opacity: [0.4, 0.6, 0.4], 
-            backgroundColor: ['#facc15', '#9ca3af', '#facc15'] 
-          }}
-          transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-20 h-20 rounded-full opacity-35 bottom-40 right-20"
-          animate={{ 
-            y: [0, 25, 0], 
-            scale: [1, 1.3, 1], 
-            backgroundColor: ['#9ca3af', '#facc15', '#9ca3af'] 
-          }}
-          transition={{ repeat: Infinity, duration: 7, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-28 h-28 rounded-full opacity-40 top-1/3 left-1/3"
-          animate={{ 
-            x: [0, -20, 0], 
-            y: [0, 15, 0], 
-            rotate: [0, 180, 0], 
-            backgroundColor: ['#facc15', '#9ca3af', '#facc15'] 
-          }}
-          transition={{ repeat: Infinity, duration: 9, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-12 h-12 rounded-full opacity-45 top-10 left-1/4"
-          animate={{ 
-            y: [0, 10, 0], 
-            scale: [1, 1.2, 1], 
-            backgroundColor: ['#facc15', '#9ca3af', '#facc15'] 
-          }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-36 h-36 rounded-full opacity-35 top-1/4 right-1/4"
-          animate={{ 
-            x: [0, -10, 0], 
-            opacity: [0.35, 0.5, 0.35], 
-            backgroundColor: ['#9ca3af', '#facc15', '#9ca3af'] 
-          }}
-          transition={{ repeat: Infinity, duration: 6.5, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-28 h-28 rounded-full opacity-40 bottom-1/3 left-1/5"
-          animate={{ 
-            y: [0, -20, 0], 
-            rotate: [0, 90, 0], 
-            backgroundColor: ['#9ca3af', '#facc15', '#9ca3af'] 
-          }}
-          transition={{ repeat: Infinity, duration: 7.5, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-20 h-20 rounded-full opacity-45 bottom-1/4 right-1/5"
-          animate={{ 
-            x: [0, 15, 0], 
-            scale: [1, 1.15, 1], 
-            backgroundColor: ['#facc15', '#9ca3af', '#facc15'] 
-          }}
-          transition={{ repeat: Infinity, duration: 5.5, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-16 h-16 rounded-full opacity-40 top-1/2 left-15"
-          animate={{ 
-            y: [0, 12, 0], 
-            opacity: [0.4, 0.6, 0.4], 
-            backgroundColor: ['#facc15', '#9ca3af', '#facc15'] 
-          }}
-          transition={{ repeat: Infinity, duration: 8.5, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-24 h-24 rounded-full opacity-35 bottom-10 right-15"
-          animate={{ 
-            x: [0, -15, 0], 
-            rotate: [0, 270, 0], 
-            backgroundColor: ['#9ca3af', '#facc15', '#9ca3af'] 
-          }}
-          transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut' }}
-        />
-        {/* Corner Lines */}
-        <motion.div
-          className="absolute w-32 h-1 bg-yellow-400 top-0 left-0"
-          animate={{ scaleX: [1, 1.2, 1] }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-32 h-1 bg-yellow-400 top-0 right-0"
-          animate={{ scaleX: [1, 1.2, 1] }}
-          transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-1 h-32 bg-yellow-400 bottom-0 left-0"
-          animate={{ scaleY: [1, 1.2, 1] }}
-          transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-1 h-32 bg-yellow-400 bottom-0 right-0"
-          animate={{ scaleY: [1, 1.2, 1] }}
-          transition={{ repeat: Infinity, duration: 5.5, ease: 'easeInOut' }}
+          className="absolute w-full h-full bg-gradient-radial from-yellow-100/20 to-transparent opacity-40"
+          animate={{ opacity: [0.3, 0.5, 0.3] }}
+          transition={{ repeat: Infinity, duration: 15, ease: 'easeInOut' }}
         />
       </div>
-        
-      {/* Hero Section */}
-      <main className="flex flex-col items-center justify-center min-h-[70vh] py-8 px-4 text-center relative w-full">
-        <motion.h1
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.8 }}
-          transition={{ duration: 1 }}
-          className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-black mb-6 leading-tight drop-shadow break-words"
+
+      {/* Navigation */}
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-3 sm:py-6 bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50 w-full"
+      >
+        <button
+          onClick={() => window.location.reload()}
+          className="focus:outline-none"
+          style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+          aria-label="Reload Page"
         >
-          <span>Welcome to{' '}</span>
-          <img src={logo} alt="yellowgray Logo" className="inline h-14 sm:h-20 align-middle mx-2" style={{ verticalAlign: 'middle' }} />
+          <motion.img
+            src={logo}
+            alt="yellowgray Logo"
+            className="h-8 sm:h-10 w-auto mb-2 sm:mb-0"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ duration: 0.3 }}
+          />
+        </button>
+        <ul className="flex flex-col sm:flex-row gap-1 sm:gap-8 text-gray-700 font-medium w-full sm:w-auto items-center text-sm sm:text-base">
+          {['Home', 'About', 'Work', 'Contact'].map((item) => (
+            <motion.li
+              key={item}
+              className="hover:text-yellow-400 transition-colors cursor-pointer px-3 py-1 sm:px-4 sm:py-2 rounded-full hover:bg-gray-100/50"
+              whileHover={{ scale: 1.05, color: '#facc15' }}
+              transition={{ duration: 0.2 }}
+            >
+              {item}
+            </motion.li>
+          ))}
+        </ul>
+      </motion.nav>
+
+      {/* Hero */}
+      <main
+        ref={heroRef}
+        className="flex flex-col items-center justify-center min-h-[70vh] sm:min-h-screen py-8 sm:py-16 px-4 text-center relative w-full z-10"
+      >
+        <motion.h1
+          initial={{ opacity: 0, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
+          className="text-4xl sm:text-7xl md:text-9xl font-black text-black mb-6 sm:mb-8 leading-none drop-shadow-lg break-words tracking-tight"
+        >
+          <motion.span className="flex items-center justify-center">Choose{' '}</motion.span>
+          <motion.img
+            src={logo}
+            alt="yellowgray Logo"
+            className="inline h-12 sm:h-24 md:h-32 align-middle mx-2 sm:mx-3"
+            initial={{ scale: 0.8, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
+            style={{ verticalAlign: 'middle' }}
+          />
         </motion.h1>
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.7 }}
-          className="text-base sm:text-xl md:text-2xl text-gray-600 max-w-xs sm:max-w-xl md:max-w-2xl mb-10"
+          transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
+          className="text-base sm:text-2xl md:text-3xl text-gray-700 max-w-md sm:max-w-2xl md:max-w-4xl mb-8 sm:mb-12 leading-relaxed text-center"
         >
-         Buzz me we rap! <br />
-          <span className="text-gray-400 text-sm sm:text-base">
-            (buidling this site from scratch!)
+          We specialize in providing tailored IT solutions for small businesses, schools, and growing organizations.
+          <br />
+          Our services include expert IT consultation, reliable support, and comprehensive equipment supply.
+          <br />
+          <span className="text-gray-500 text-sm sm:text-xl md:text-2xl block mt-2 sm:mt-4">
+            We make technology simple, affordable, and effective—so you can focus on what matters most.
           </span>
         </motion.p>
         <motion.button
-          whileHover={{ scale: 1.1, rotate: 3 }}
+          whileHover={{
+            scale: 1.15,
+            rotate: 2,
+            boxShadow: '0 10px 20px rgba(250, 204, 21, 0.3)',
+          }}
           whileTap={{ scale: 0.95 }}
-          className="px-6 sm:px-8 py-3 rounded-full bg-yellow-400 text-black font-bold shadow-lg hover:bg-black hover:text-yellow-400 transition-colors text-base sm:text-lg"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
+          className="px-6 sm:px-10 py-3 sm:py-4 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-300 text-base sm:text-xl"
         >
-        CLick Me
+          Learn More
         </motion.button>
-        <div className="pointer-events-none fixed top-0 left-0 w-full h-full z-0">
-          <motion.div
-            className="w-2 h-2 bg-yellow-400 rounded-full"
-            style={{ translateX: cursorXSpring, translateY: cursorYSpring }}
-          />
-        </div>
       </main>
+
+      {/* Services */}
+      <section
+        ref={servicesRef}
+        className="py-16 px-4 text-center bg-transparent relative z-10"
+      >
+        <motion.h3
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-3xl sm:text-4xl font-bold text-black mb-4"
+        >
+          Our Core Business Model Includes...
+        </motion.h3>
+
+        <div className="w-20 h-1 bg-yellow-400 mx-auto mb-12"></div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[
+            {
+              title: 'IT Consultation & Support',
+              desc:
+                'Expert IT consultation and support to optimize your technology and resolve issues efficiently.',
+              icon: 'message-circle',
+            },
+            {
+              title: 'Web Development & Hosting',
+              desc:
+                'Modern, secure web apps and hosting to elevate your online presence and reliability.',
+              icon: 'code',
+            },
+            {
+              title: 'Supply of IT Equipment',
+              desc:
+                'Dependable procurement and provisioning of core IT equipment for businesses and schools.',
+              icon: 'truck',
+            },
+            {
+              title: 'Device Repair & Maintenance',
+              desc:
+                'Fast, professional device repair and maintenance to keep your operations running smoothly.',
+              icon: 'settings',
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              // Initial state: slightly rotated and below
+              initial={{ opacity: 0, y: 50 }}
+              // Aminamte in when in view: lift, and fade in
+              whileInView={{
+                opacity: 1,
+                y: 0,
+                rotate: 0,
+                transition: {
+                  type: 'spring',
+                  stiffness: 100,
+                  damping: 20,
+                  delay: i * 0.1, // Staggered entry
+                },
+              }}
+              // Subtle scroll-based parallax
+              style={{ y: translateYVals[i] }}
+              // Hover effect: lift and straighten
+              whileHover={{ scale: 1.03, y: -6 }}
+              viewport={{ once: true, amount: 0.3 }} // Trigger when 30% of card is visible
+              className="bg-white shadow-lg rounded-2xl p-6 transform transition-all will-change-transform"
+            >
+              <motion.div
+                // Icon micro-animation
+                initial={{ rotate: 0 }}
+                whileInView={{ rotate: [0, 10, 0] }}
+                whileHover={{ rotate: 12 }}
+                transition={{ duration: 0.6 }}
+                className="text-yellow-500 mb-4"
+              >
+                <i data-feather={item.icon} className="w-10 h-10 mx-auto"></i>
+              </motion.div>
+
+              <h4 className="text-xl font-semibold mb-2 text-gray-900">{item.title}</h4>
+              <p className="text-gray-600">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Custom Cursor (always visible) */}
+      <div className="pointer-events-none fixed top-0 left-0 w-full h-full z-50 hidden sm:block">
+        <motion.div
+          className="w-4 h-4 bg-yellow-400 rounded-full shadow-lg opacity-90"
+          style={{ translateX: cursorXSpring, translateY: cursorYSpring }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+        />
+      </div>
     </div>
   );
 }

@@ -27,6 +27,13 @@
   }
 }
 
+/* Hide default cursor only on desktop */
+@media (min-width: 640px) {
+  body {
+    cursor: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
@@ -39,4 +46,26 @@
 
 .read-the-docs {
   color: #888;
+}
+
+
+/* Only hide the native cursor on desktop (so mobile / touch still show system cursor) */
+@media (min-width: 640px) {
+  .use-custom-cursor {
+    cursor: none; /* apply this class to your root container if you want the custom dot only */
+  }
+}
+
+/* Make sure the custom cursor overlay sits above everything */
+.custom-cursor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999; /* make it higher than nav/content */
+  pointer-events: none;
+}
+
+/* Ensure page backgrounds are full height and seamless */
+html, body, #root {
+  height: 100%;
+  background-color: transparent; /* keep Tailwind gradient on the main wrapper */
 }
