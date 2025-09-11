@@ -64,25 +64,23 @@ function App() {
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
   useEffect(() => {
-    feather.replace();
-
-    const moveCursor = (e) => {
+  feather.replace();
+  const moveCursor = (e) => {
+    try {
       cursorX.set(e.clientX - 8);
       cursorY.set(e.clientY - 8);
-    };
-    window.addEventListener('mousemove', moveCursor);
-
-    // Show/hide floating CTA based on scroll
-    const handleScroll = () => {
-      setShowFloatingCTA(window.scrollY > 300);
-    };
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('mousemove', moveCursor);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [cursorX, cursorY]);
+    } catch (error) {
+      console.error('Cursor move error:', error);
+    }
+  };
+  window.addEventListener('mousemove', moveCursor);
+  const handleScroll = () => setShowFloatingCTA(window.scrollY > 300);
+  window.addEventListener('scroll', handleScroll);
+  return () => {
+    window.removeEventListener('mousemove', moveCursor);
+    window.removeEventListener('scroll', handleScroll);
+  };
+}, [cursorX, cursorY]);
 
   // Parallax for hero
   const heroRef = useRef(null);
@@ -92,13 +90,15 @@ function App() {
   // State for hamburger menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Link behavior for smooth scrolling
+  // Link behavior for smooth scrolling with offset
   const handleNavLinkClick = (e) => {
     e.preventDefault();
     const targetId = e.target.textContent.toLowerCase();
     const targetSection = document.getElementById(targetId);
     if (targetSection) {
-      targetSection.scrollIntoView({ behavior: 'smooth' });
+      const navHeight = document.querySelector('nav').offsetHeight || 56; // Default to 56px if not found
+      const offsetTop = targetSection.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({ top: offsetTop, behavior: 'smooth' });
       setIsMenuOpen(false);
     }
   };
