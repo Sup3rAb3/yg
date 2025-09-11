@@ -72,7 +72,7 @@
 
 /* Grain texture for modern aesthetic */
 .bg-grain {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   background-repeat: repeat;
 }
 
@@ -89,35 +89,31 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Ensure sticky navigation */
+nav {
+  position: sticky !important;
+  top: 0;
+  z-index: 50;
+}
+
 /* Enhanced card hover effects */
 .card {
-  transition: all 0.3s ease;
-  will-change: transform, box-shadow;
+  transition: all 0.2s ease;
 }
 
 /* Input and textarea focus states */
 input:focus,
 textarea:focus {
-  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3);
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.3);
 }
 
 /* Responsive typography */
 @media (max-width: 640px) {
-  .text-9xl {
-    font-size: 3.5rem;
-  }
-  .text-7xl {
-    font-size: 2.5rem;
-  }
-  .text-5xl {
-    font-size: 2rem;
-  }
-  .text-4xl {
-    font-size: 1.75rem;
-  }
-  .text-3xl {
-    font-size: 1.5rem;
-  }
+  .text-9xl { font-size: 3rem; }
+  .text-7xl { font-size: 2.25rem; }
+  .text-5xl { font-size: 1.75rem; }
+  .text-4xl { font-size: 1.5rem; }
+  .text-3xl { font-size: 1.25rem; }
 }
 
 /* Ensure feather icons render crisply */
@@ -132,8 +128,11 @@ img.object-contain {
   object-fit: contain;
 }
 
-nav {
-  position: sticky !important;
-  top: 0;
-  z-index: 50;
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .bg-grain { opacity: 0; }
+  .blur-2xl { blur: 1rem; }
+  .shadow-xl { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  #about .flex { flex-direction: column; }
+  #about .grid { grid-template-columns: 1fr; }
 }

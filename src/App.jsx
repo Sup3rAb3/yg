@@ -64,23 +64,28 @@ function App() {
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
   useEffect(() => {
-  feather.replace();
-  const moveCursor = (e) => {
-    try {
+    feather.replace();
+
+    const moveCursor = (e) => {
       cursorX.set(e.clientX - 8);
       cursorY.set(e.clientY - 8);
-    } catch (error) {
-      console.error('Cursor move error:', error);
-    }
-  };
-  window.addEventListener('mousemove', moveCursor);
-  const handleScroll = () => setShowFloatingCTA(window.scrollY > 300);
-  window.addEventListener('scroll', handleScroll);
-  return () => {
-    window.removeEventListener('mousemove', moveCursor);
-    window.removeEventListener('scroll', handleScroll);
-  };
-}, [cursorX, cursorY]);
+    };
+    window.addEventListener('mousemove', moveCursor);
+
+    // Show/hide floating CTA based on scroll
+    const handleScroll = () => {
+      setShowFloatingCTA(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [cursorX, cursorY]);
+
+
+  
 
   // Parallax for hero
   const heroRef = useRef(null);
