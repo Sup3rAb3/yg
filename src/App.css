@@ -48,24 +48,92 @@
   color: #888;
 }
 
+.card {
+  /* other styles */
+  background-color: rgba(255, 255, 255, 0.1); /* You can keep or change this */
+  /* Remove the backdrop-filter property entirely */
+}
 
-/* Only hide the native cursor on desktop (so mobile / touch still show system cursor) */
-@media (min-width: 640px) {
-  .use-custom-cursor {
-    cursor: none; /* apply this class to your root container if you want the custom dot only */
+
+
+/* Base styles for the glowing card effect */
+.glowing-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: glow-animation 25s ease-in-out infinite;
+}
+
+/* Hero Section */
+.h-screen {
+  height: 100vh;
+}
+
+
+/* Grain texture for modern aesthetic */
+.bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* Global styles */
+body {
+  margin: 0;
+  font-family: 'Inter Variable', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced card hover effects */
+.card {
+  transition: all 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+/* Input and textarea focus states */
+input:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3);
+}
+
+/* Responsive typography */
+@media (max-width: 640px) {
+  .text-9xl {
+    font-size: 3.5rem;
+  }
+  .text-7xl {
+    font-size: 2.5rem;
+  }
+  .text-5xl {
+    font-size: 2rem;
+  }
+  .text-4xl {
+    font-size: 1.75rem;
+  }
+  .text-3xl {
+    font-size: 1.5rem;
   }
 }
 
-/* Make sure the custom cursor overlay sits above everything */
-.custom-cursor-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999; /* make it higher than nav/content */
-  pointer-events: none;
+/* Ensure feather icons render crisply */
+svg.feather {
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* Ensure page backgrounds are full height and seamless */
-html, body, #root {
-  height: 100%;
-  background-color: transparent; /* keep Tailwind gradient on the main wrapper */
+/* Prevent logo stretching */
+img.object-contain {
+  object-fit: contain;
+}
+
+nav {
+  position: sticky !important;
+  top: 0;
+  z-index: 50;
 }
