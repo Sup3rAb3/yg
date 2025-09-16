@@ -110,7 +110,8 @@ function App() {
     const targetId = e.target.textContent.toLowerCase();
     const targetSection = document.getElementById(targetId);
     if (targetSection) {
-      const navHeight = document.querySelector('nav').offsetHeight || 56;
+      // Corrected selector to find the navigation element by its ID
+      const navHeight = document.getElementById('main-nav').offsetHeight || 56;
       const offsetTop = targetSection.getBoundingClientRect().top + window.scrollY - navHeight - 20;
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
       setIsMenuOpen(false);
@@ -148,6 +149,8 @@ function App() {
 
       {/* Sticky Navigation */}
       <AnimatedWrapper
+        // Added id="main-nav" to allow the handleNavLinkClick function to select it
+        id="main-nav"
         initial={!isMobile ? { y: -100 } : false}
         animate={!isMobile ? { y: 0 } : false}
         transition={!isMobile ? { duration: 0.6, ease: 'easeOut' } : false}
