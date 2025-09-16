@@ -49,6 +49,9 @@ const aboutCardsData = [
 ];
 
 function App() {
+  // Detect mobile for adjustments
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+
   // Custom cursor
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
@@ -63,9 +66,6 @@ function App() {
   // Floating CTA visibility
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
-  // Detect mobile for adjustments
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
-
   useEffect(() => {
     feather.replace();
 
@@ -73,9 +73,10 @@ function App() {
       cursorX.set(e.clientX - 8);
       cursorY.set(e.clientY - 8);
     };
-    window.addEventListener('mousemove', moveCursor);
+    if (!isMobile) {
+      window.addEventListener('mousemove', moveCursor);
+    }
 
-    // Show/hide floating CTA based on scroll
     const handleScroll = () => {
       setShowFloatingCTA(window.scrollY > 300);
     };
@@ -87,11 +88,13 @@ function App() {
     window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
+      if (!isMobile) {
+        window.removeEventListener('mousemove', moveCursor);
+      }
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
     };
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, isMobile]);
 
   // Parallax for hero
   const heroRef = useRef(null);
@@ -107,12 +110,15 @@ function App() {
     const targetId = e.target.textContent.toLowerCase();
     const targetSection = document.getElementById(targetId);
     if (targetSection) {
-      const navHeight = document.querySelector('nav').offsetHeight || 56; // Default to 56px if not found
-      const offsetTop = targetSection.getBoundingClientRect().top + window.scrollY - navHeight - 20; // Added extra offset for mobile
+      const navHeight = document.querySelector('nav').offsetHeight || 56;
+      const offsetTop = targetSection.getBoundingClientRect().top + window.scrollY - navHeight - 20;
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
       setIsMenuOpen(false);
     }
   };
+
+  const AnimatedWrapper = isMobile ? 'div' : motion.div;
+  const AnimatedSection = isMobile ? 'section' : motion.section;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 font-sans relative">
@@ -120,29 +126,31 @@ function App() {
       <div className="fixed top-0 left-0 w-full h-full bg-grain opacity-5 pointer-events-none z-0"></div>
 
       {/* Glowing Background Shapes - reduced blur and duration for faster performance */}
-      <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <motion.div
-          className="absolute w-64 h-64 opacity-25 blur-xl top-20 left-10 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
-          animate={{ y: [0, 40, 0], scale: [1, 1.15, 1] }}
-          transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-72 h-72 opacity-20 blur-xl top-1/2 right-10 bg-gradient-to-r from-gray-300 to-yellow-400 rounded-full"
-          animate={{ y: [0, -30, 0], scale: [1, 1.25, 1] }}
-          transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-56 h-56 opacity-25 blur-xl bottom-20 left-20 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
-          animate={{ x: [0, 25, 0], scale: [1, 1.1, 1] }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-        />
-      </div>
+      {!isMobile && (
+        <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+          <motion.div
+            className="absolute w-64 h-64 opacity-25 blur-xl top-20 left-10 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
+            animate={{ y: [0, 40, 0], scale: [1, 1.15, 1] }}
+            transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute w-72 h-72 opacity-20 blur-xl top-1/2 right-10 bg-gradient-to-r from-gray-300 to-yellow-400 rounded-full"
+            animate={{ y: [0, -30, 0], scale: [1, 1.25, 1] }}
+            transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute w-56 h-56 opacity-25 blur-xl bottom-20 left-20 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
+            animate={{ x: [0, 25, 0], scale: [1, 1.1, 1] }}
+            transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+          />
+        </div>
+      )}
 
-      {/* Sticky Navigation - replaced backdrop-blur with semi-transparent bg for performance */}
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+      {/* Sticky Navigation */}
+      <AnimatedWrapper
+        initial={!isMobile ? { y: -100 } : false}
+        animate={!isMobile ? { y: 0 } : false}
+        transition={!isMobile ? { duration: 0.6, ease: 'easeOut' } : false}
         className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-3 sm:py-4 bg-white/80 shadow-lg sticky top-0 z-50 w-full max-w-screen-xl mx-auto rounded-b-2xl"
       >
         <button
@@ -154,9 +162,9 @@ function App() {
             src={logo}
             alt="yellowgray Logo"
             className="h-10 sm:h-12 w-auto object-contain"
-            loading="eager" // Prioritize nav logo
-            whileHover={{ scale: 1.15, rotate: 8 }}
-            transition={{ duration: 0.2 }}
+            loading="eager"
+            whileHover={!isMobile ? { scale: 1.15, rotate: 8 } : {}}
+            transition={!isMobile ? { duration: 0.2 } : {}}
           />
         </button>
         <div className="sm:hidden relative">
@@ -217,47 +225,49 @@ function App() {
             </motion.li>
           ))}
         </ul>
-      </motion.nav>
+      </AnimatedWrapper>
 
-      {/* Hero Section (Card View) - reduced particles and durations */}
+      {/* Hero Section */}
       <main
         id="home"
         ref={heroRef}
         className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
-        style={{ position: 'relative', y: yParallax }}
+        style={!isMobile ? { position: 'relative', y: yParallax } : {}}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+        <AnimatedWrapper
+          initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
+          whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, type: 'spring', stiffness: 100 }}
+          transition={!isMobile ? { duration: 0.7, type: 'spring', stiffness: 100 } : false}
           className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[80vh] text-center relative overflow-hidden"
         >
-          {/* Interactive Particles - reduced to 3 for performance */}
-          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-            {[...Array(3)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-5 h-5 bg-yellow-400/40 rounded-full blur-sm"
-                animate={{
-                  x: [Math.random() * 100 - 50, Math.random() * 100 - 50],
-                  y: [Math.random() * 100 - 50, Math.random() * 100 - 50],
-                  scale: [1, 1.3, 1],
-                  opacity: [0.4, 0.7, 0.4],
-                }}
-                transition={{
-                  duration: 3 + Math.random() * 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              />
-            ))}
-          </div>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+          {/* Interactive Particles */}
+          {!isMobile && (
+            <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-5 h-5 bg-yellow-400/40 rounded-full blur-sm"
+                  animate={{
+                    x: [Math.random() * 100 - 50, Math.random() * 100 - 50],
+                    y: [Math.random() * 100 - 50, Math.random() * 100 - 50],
+                    scale: [1, 1.3, 1],
+                    opacity: [0.4, 0.7, 0.4],
+                  }}
+                  transition={{
+                    duration: 3 + Math.random() * 3,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          <AnimatedWrapper
+            initial={!isMobile ? { opacity: 0, y: 30 } : false}
+            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
+            transition={!isMobile ? { duration: 0.7, ease: 'easeOut' } : false}
             className="text-5xl sm:text-7xl md:text-9xl font-extrabold text-black mb-6 sm:mb-8 leading-none drop-shadow-xl break-words tracking-tighter relative"
           >
             <motion.span className="flex items-center justify-center flex-wrap">
@@ -266,18 +276,18 @@ function App() {
                 src={logo}
                 alt="yellowgray Logo"
                 className="inline h-16 sm:h-28 md:h-36 max-h-[150px] sm:max-h-[250px] object-contain align-middle mx-3 sm:mx-4"
-                loading="eager" // Prioritize hero logo for LCP
-                initial={{ scale: 0.8, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
+                loading="eager"
+                initial={!isMobile ? { scale: 0.8, opacity: 0 } : {}}
+                whileInView={!isMobile ? { scale: 1, opacity: 1 } : {}}
+                transition={!isMobile ? { delay: 0.3, duration: 0.6, ease: 'easeOut' } : {}}
                 style={{ verticalAlign: 'middle' }}
               />
             </motion.span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6, ease: 'easeOut' }}
+          </AnimatedWrapper>
+          <AnimatedWrapper
+            initial={!isMobile ? { opacity: 0, y: 30 } : false}
+            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
+            transition={!isMobile ? { delay: 0.4, duration: 0.6, ease: 'easeOut' } : false}
             className="text-lg sm:text-2xl md:text-3xl text-gray-700 max-w-lg sm:max-w-3xl md:max-w-5xl mb-6 sm:mb-8 leading-relaxed text-center"
           >
             We specialize in providing tailored IT solutions for small businesses, schools, and growing organizations.
@@ -287,83 +297,83 @@ function App() {
             <span className="text-gray-500 text-base sm:text-xl md:text-2xl block mt-2 sm:mt-3">
               We make technology simple, affordable, and effective—so you can focus on what matters most.
             </span>
-          </motion.p>
-          <motion.button
-            whileHover={{
+          </AnimatedWrapper>
+          <AnimatedWrapper
+            as="button"
+            whileHover={!isMobile ? {
               scale: 1.15,
               rotate: 3,
               boxShadow: '0 12px 24px rgba(250, 204, 21, 0.4)',
-            }}
-            whileTap={{ scale: 0.95 }}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6, ease: 'easeOut' }}
+            } : {}}
+            whileTap={!isMobile ? { scale: 0.95 } : {}}
+            initial={!isMobile ? { opacity: 0, y: 30 } : false}
+            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
+            transition={!isMobile ? { delay: 0.5, duration: 0.6, ease: 'easeOut' } : false}
             className="px-8 sm:px-12 py-4 sm:py-5 rounded-full bg-yellow-400 text-black font-bold shadow-2xl hover:bg-black hover:text-yellow-400 transition-all duration-200 text-lg sm:text-xl"
           >
             Contact Us
-          </motion.button>
-        </motion.div>
+          </AnimatedWrapper>
+        </AnimatedWrapper>
       </main>
 
       {/* Floating CTA Button */}
-      <AnimatePresence>
-        {showFloatingCTA && (
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            transition={{ duration: 0.3 }}
-            className="fixed bottom-6 right-6 z-50"
-          >
-            <motion.button
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-200 text-base"
+      {!isMobile && (
+        <AnimatePresence>
+          {showFloatingCTA && (
+            <motion.div
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              transition={{ duration: 0.3 }}
+              className="fixed bottom-6 right-6 z-50"
             >
-              Get Started
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-200 text-base"
+              >
+                Get Started
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
 
-      {/* Services Section (Card View) */}
-      <section
+      {/* Services Section */}
+      <AnimatedSection
         id="work"
         ref={servicesRef}
         className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
-        style={{ position: 'relative' }}
+        initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
+        whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={!isMobile ? { duration: 0.6, type: 'spring', stiffness: 100 } : false}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-          className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12"
-        >
-          <motion.h3
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+        <div className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12">
+          <AnimatedWrapper
+            initial={!isMobile ? { opacity: 0, y: 30 } : false}
+            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6 }}
+            transition={!isMobile ? { duration: 0.6 } : false}
             className="text-4xl sm:text-5xl font-extrabold text-black mb-6 text-center"
           >
             Our Core Services
-          </motion.h3>
+          </AnimatedWrapper>
           <div className="w-24 h-1 bg-yellow-400 mx-auto mb-10"></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {servicesData.map((item, i) => (
-              <motion.div
+              <AnimatedWrapper
                 key={item.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={!isMobile ? { opacity: 0, y: 30 } : false}
+                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.4, delay: i * 0.1, ease: 'easeOut' }}
-                whileHover={{
+                transition={!isMobile ? { duration: 0.4, delay: i * 0.1, ease: 'easeOut' } : false}
+                whileHover={!isMobile ? {
                   scale: 1.05,
                   y: -8,
                   rotate: 1,
                   boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-                }}
+                } : {}}
                 className="bg-white p-8 rounded-3xl shadow-lg border-2 border-transparent hover:border-yellow-400 transition-all duration-200 cursor-pointer will-change-transform relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
@@ -379,83 +389,78 @@ function App() {
                 <p className="text-gray-700 leading-relaxed text-base">
                   {item.desc}
                 </p>
-              </motion.div>
+              </AnimatedWrapper>
             ))}
           </div>
-        </motion.div>
-      </section>
+        </div>
+      </AnimatedSection>
 
-      {/* About Us Section (Card View, Improved) - adjusted viewport for mobile visibility */}
-      <section
+      {/* About Us Section */}
+      <AnimatedSection
         id="about"
-        className="py-12 px-4 relative z-20 max-w-screen-xl mx-auto" // Increased z-index
-        style={{ position: 'relative', display: isMobile ? 'block' : 'relative' }}
+        className="py-12 px-4 relative z-20 max-w-screen-xl mx-auto"
+        initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
+        whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={!isMobile ? { duration: 0.6, type: 'spring', stiffness: 100 } : false}
       >
-        <motion.div
-          initial={{ opacity: isMobile ? 1 : 0, scale: isMobile ? 1 : 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.1 }} // Reduced amount for faster trigger
-          transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-          className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12"
-        >
+        <div className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12">
           <div className="flex flex-col lg:flex-row gap-12 items-start">
-            {/* Left Column: Why Choose Yellow Gray */}
             <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <motion.h3
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+              <AnimatedWrapper
+                initial={!isMobile ? { opacity: 0, y: 30 } : false}
+                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
                 viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.6 }}
+                transition={!isMobile ? { duration: 0.6 } : false}
                 className="text-4xl sm:text-5xl font-extrabold text-black mb-4"
               >
                 Why Choose Yellow Gray
-              </motion.h3>
-              <motion.h4
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+              </AnimatedWrapper>
+              <AnimatedWrapper
+                initial={!isMobile ? { opacity: 0, y: 30 } : false}
+                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
                 viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
+                transition={!isMobile ? { duration: 0.6, delay: 0.1 } : false}
                 className="text-xl sm:text-2xl text-gray-600 mb-6"
               >
                 Your Trusted IT Partner
-              </motion.h4>
+              </AnimatedWrapper>
               <div className="w-24 h-1 bg-yellow-400 mx-auto lg:mx-0 mb-8"></div>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+              <AnimatedWrapper
+                initial={!isMobile ? { opacity: 0, y: 30 } : false}
+                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
                 viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={!isMobile ? { duration: 0.6, delay: 0.2 } : false}
                 className="text-lg sm:text-xl text-gray-700 mb-6 leading-relaxed"
               >
                 Based in Lusaka, Zambia, we’re a passionate team dedicated to making technology work for you. Our mission is to simplify IT for small businesses, schools, and growing organizations, ensuring seamless operations and growth.
-              </motion.p>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+              </AnimatedWrapper>
+              <AnimatedWrapper
+                initial={!isMobile ? { opacity: 0, y: 30 } : false}
+                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
                 viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+                transition={!isMobile ? { duration: 0.6, delay: 0.3 } : false}
                 className="text-lg sm:text-xl text-gray-700 leading-relaxed"
               >
                 With a focus on innovation and reliability, we provide tailored solutions to help you navigate the digital landscape with confidence. Let us handle the tech, so you can focus on what you do best.
-              </motion.p>
+              </AnimatedWrapper>
             </div>
 
-            {/* Right Column: Enhanced Cards */}
             <div className="w-full lg:w-1/2 text-center lg:text-left">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {aboutCardsData.map((item, i) => (
-                  <motion.div
+                  <AnimatedWrapper
                     key={i}
-                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    initial={!isMobile ? { opacity: 0, y: 30, scale: 0.95 } : false}
+                    whileInView={!isMobile ? { opacity: 1, y: 0, scale: 1 } : false}
                     viewport={{ once: true, amount: 0.1 }}
-                    transition={{ duration: 0.4, delay: i * 0.1, type: 'spring', stiffness: 120 }}
-                    whileHover={{
+                    transition={!isMobile ? { duration: 0.4, delay: i * 0.1, type: 'spring', stiffness: 120 } : false}
+                    whileHover={!isMobile ? {
                       y: -8,
                       rotate: 2,
                       boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
                       scale: 1.05,
-                    }}
+                    } : {}}
                     className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 cursor-pointer transition-all duration-200 transform-gpu will-change-transform relative overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
@@ -470,54 +475,53 @@ function App() {
                     <p className="text-gray-600 text-base leading-relaxed">
                       {item.desc}
                     </p>
-                  </motion.div>
+                  </AnimatedWrapper>
                 ))}
               </div>
             </div>
           </div>
-        </motion.div>
-      </section>
+        </div>
+      </AnimatedSection>
 
-      {/* Contact Section (Card View) */}
-      <section
+      {/* Contact Section */}
+      <AnimatedSection
         id="contact"
         className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
-        style={{ position: 'relative' }}
+        initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
+        whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={!isMobile ? { duration: 0.6, type: 'spring', stiffness: 100 } : false}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-          className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12 max-w-3xl mx-auto relative overflow-hidden"
-        >
-          <motion.h3
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+        <div className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12 max-w-3xl mx-auto relative overflow-hidden">
+          <AnimatedWrapper
+            initial={!isMobile ? { opacity: 0, y: 30 } : false}
+            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6 }}
+            transition={!isMobile ? { duration: 0.6 } : false}
             className="text-4xl sm:text-5xl font-extrabold text-black mb-6 text-center"
           >
             Get in Touch
-          </motion.h3>
+          </AnimatedWrapper>
           <div className="w-24 h-1 bg-yellow-400 mx-auto mb-10"></div>
-          {/* Animated Icons Background - reduced durations */}
-          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-            {['mail', 'phone', 'message-square', 'at-sign'].map((icon, i) => (
-              <motion.div
-                key={icon}
-                className={`absolute w-8 h-8 text-yellow-500/20`}
-                animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-                transition={{ duration: 10 + i * 1.5, repeat: Infinity, ease: 'linear' }}
-                style={{
-                  x: i % 2 === 0 ? -100 + i * 50 : 100 - i * 50,
-                  y: i % 2 === 0 ? -80 + i * 40 : 80 - i * 40,
-                }}
-              >
-                <i data-feather={icon} className="w-full h-full"></i>
-              </motion.div>
-            ))}
-          </div>
+          {/* Animated Icons Background */}
+          {!isMobile && (
+            <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+              {['mail', 'phone', 'message-square', 'at-sign'].map((icon, i) => (
+                <motion.div
+                  key={icon}
+                  className={`absolute w-8 h-8 text-yellow-500/20`}
+                  animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
+                  transition={{ duration: 10 + i * 1.5, repeat: Infinity, ease: 'linear' }}
+                  style={{
+                    x: i % 2 === 0 ? -100 + i * 50 : 100 - i * 50,
+                    y: i % 2 === 0 ? -80 + i * 40 : 80 - i * 40,
+                  }}
+                >
+                  <i data-feather={icon} className="w-full h-full"></i>
+                </motion.div>
+              ))}
+            </div>
+          )}
           {/* Form Content */}
           <form className="space-y-8 relative z-10">
             <div>
@@ -568,27 +572,29 @@ function App() {
                 required
               ></textarea>
             </div>
-            <motion.button
+            <AnimatedWrapper
+              as="button"
               type="submit"
-              whileHover={{
+              whileHover={!isMobile ? {
                 scale: 1.05,
                 boxShadow: '0 10px 20px rgba(250, 204, 21, 0.5)',
-              }}
-              whileTap={{ scale: 0.95 }}
+              } : {}}
+              whileTap={!isMobile ? { scale: 0.95 } : {}}
               className="w-full px-8 py-5 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-lg hover:bg-black hover:text-yellow-400 transition-all duration-200"
             >
               Submit
-            </motion.button>
+            </AnimatedWrapper>
           </form>
-        </motion.div>
-      </section>
+        </div>
+      </AnimatedSection>
 
       {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
+      <AnimatedWrapper
+        as="footer"
+        initial={!isMobile ? { opacity: 0, y: 50 } : false}
+        whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6 }}
+        transition={!isMobile ? { duration: 0.6 } : false}
         className="w-full bg-black text-gray-400 py-12 relative z-20"
       >
         <div className="max-w-screen-xl mx-auto px-4 text-center">
@@ -631,17 +637,19 @@ function App() {
             </p>
           </div>
         </div>
-      </motion.footer>
+      </AnimatedWrapper>
 
       {/* Custom Cursor - hidden on mobile */}
-      <div className="pointer-events-none fixed top-0 left-0 w-full h-full z-50 hidden sm:block">
-        <motion.div
-          className="w-5 h-5 bg-yellow-400 rounded-full shadow-lg opacity-80 border border-white/50"
-          style={{ x: cursorX, y: cursorY }}
-          animate={{ scale: [1, 1.3, 1] }}
-          transition={{ repeat: Infinity, duration: 0.8, ease: 'easeInOut' }}
-        />
-      </div>
+      {!isMobile && (
+        <div className="pointer-events-none fixed top-0 left-0 w-full h-full z-50">
+          <motion.div
+            className="w-5 h-5 bg-yellow-400 rounded-full shadow-lg opacity-80 border border-white/50"
+            style={{ x: cursorX, y: cursorY }}
+            animate={{ scale: [1, 1.3, 1] }}
+            transition={{ repeat: Infinity, duration: 0.8, ease: 'easeInOut' }}
+          />
+        </div>
+      )}
     </div>
   );
 }
