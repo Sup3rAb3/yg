@@ -5,8 +5,8 @@ import {
   useTransform,
   AnimatePresence,
 } from 'framer-motion';
-import logo from './assets/logo.png';
-import whitelogo from './assets/logo_white.png';
+import logo from './assets/logo.webp';
+import whitelogo from './assets/logo_white.webp';
 import '@fontsource-variable/inter';
 import './App.css';
 import './index.css';
@@ -63,8 +63,10 @@ function App() {
   // Floating CTA visibility
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
-  // Detect mobile for adjustments
+  // Mobile detection and logo load states
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+  const [navLogoLoaded, setNavLogoLoaded] = useState(false);
+  const [heroLogoLoaded, setHeroLogoLoaded] = useState(false);
 
   useEffect(() => {
     feather.replace();
@@ -75,7 +77,6 @@ function App() {
     };
     window.addEventListener('mousemove', moveCursor);
 
-    // Show/hide floating CTA based on scroll
     const handleScroll = () => {
       setShowFloatingCTA(window.scrollY > 300);
     };
@@ -107,8 +108,8 @@ function App() {
     const targetId = e.target.textContent.toLowerCase();
     const targetSection = document.getElementById(targetId);
     if (targetSection) {
-      const navHeight = document.querySelector('nav').offsetHeight || 56; // Default to 56px if not found
-      const offsetTop = targetSection.getBoundingClientRect().top + window.scrollY - navHeight - 20; // Added extra offset for mobile
+      const navHeight = document.querySelector('nav').offsetHeight || 56;
+      const offsetTop = targetSection.getBoundingClientRect().top + window.scrollY - navHeight - (isMobile ? 20 : 10);
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
       setIsMenuOpen(false);
     }
@@ -116,34 +117,34 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 font-sans relative">
-      {/* Grain Texture Overlay - reduced opacity for performance */}
-      <div className="fixed top-0 left-0 w-full h-full bg-grain opacity-5 pointer-events-none z-0"></div>
+      {/* Grain Texture Overlay */}
+      <div className="fixed top-0 left-0 w-full h-full bg-grain opacity-10 pointer-events-none z-0"></div>
 
-      {/* Glowing Background Shapes - reduced blur and duration for faster performance */}
+      {/* Glowing Background Shapes */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <motion.div
-          className="absolute w-64 h-64 opacity-25 blur-xl top-20 left-10 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
+          className="absolute w-64 h-64 opacity-25 blur-3xl top-20 left-10 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
           animate={{ y: [0, 40, 0], scale: [1, 1.15, 1] }}
-          transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
+          transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute w-72 h-72 opacity-20 blur-xl top-1/2 right-10 bg-gradient-to-r from-gray-300 to-yellow-400 rounded-full"
+          className="absolute w-72 h-72 opacity-20 blur-3xl top-1/2 right-10 bg-gradient-to-r from-gray-300 to-yellow-400 rounded-full"
           animate={{ y: [0, -30, 0], scale: [1, 1.25, 1] }}
-          transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
+          transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute w-56 h-56 opacity-25 blur-xl bottom-20 left-20 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
+          className="absolute w-56 h-56 opacity-25 blur-3xl bottom-20 left-20 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
           animate={{ x: [0, 25, 0], scale: [1, 1.1, 1] }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+          transition={{ repeat: Infinity, duration: 7, ease: 'easeInOut' }}
         />
       </div>
 
-      {/* Sticky Navigation - replaced backdrop-blur with semi-transparent bg for performance */}
+      {/* Sticky Navigation */}
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-3 sm:py-4 bg-white/80 shadow-lg sticky top-0 z-50 w-full max-w-screen-xl mx-auto rounded-b-2xl"
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-3 sm:py-4 bg-white/95 backdrop-blur-xl shadow-lg sticky top-0 z-50 w-full max-w-screen-xl mx-auto rounded-b-2xl"
       >
         <button
           onClick={() => window.location.reload()}
@@ -154,9 +155,12 @@ function App() {
             src={logo}
             alt="yellowgray Logo"
             className="h-10 sm:h-12 w-auto object-contain"
-            loading="eager" // Prioritize nav logo
-            whileHover={{ scale: 1.15, rotate: 8 }}
-            transition={{ duration: 0.2 }}
+            loading="lazy"
+            onLoad={() => setNavLogoLoaded(true)}
+            initial={{ opacity: 0, scale: isMobile ? 0.95 : 0.8 }}
+            animate={navLogoLoaded ? { opacity: 1, scale: 1 } : { opacity: 0 }}
+            whileHover={navLogoLoaded ? { scale: 1.15, rotate: 8 } : {}}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
           />
         </button>
         <div className="sm:hidden relative">
@@ -186,15 +190,15 @@ function App() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                className="absolute top-14 right-2 bg-white/80 shadow-xl rounded-xl p-4 w-40 border border-gray-100"
+                transition={{ duration: 0.3 }}
+                className="absolute top-14 right-2 bg-white/95 backdrop-blur-xl shadow-xl rounded-xl p-4 w-40 border border-gray-100"
               >
                 {['Home', 'About', 'Work', 'Contact'].map((item) => (
                   <motion.li
                     key={item}
                     className="hover:text-yellow-400 transition-colors cursor-pointer px-4 py-2 rounded-lg hover:bg-gray-100/70 text-gray-800 font-semibold"
                     whileHover={{ scale: 1.05, color: '#facc15' }}
-                    transition={{ duration: 0.1 }}
+                    transition={{ duration: 0.2 }}
                     onClick={handleNavLinkClick}
                   >
                     {item}
@@ -210,7 +214,7 @@ function App() {
               key={item}
               className="hover:text-yellow-400 transition-colors cursor-pointer px-5 py-2 rounded-full hover:bg-gray-100/70"
               whileHover={{ scale: 1.1, color: '#facc15' }}
-              transition={{ duration: 0.1 }}
+              transition={{ duration: 0.2 }}
               onClick={handleNavLinkClick}
             >
               {item}
@@ -219,7 +223,7 @@ function App() {
         </ul>
       </motion.nav>
 
-      {/* Hero Section (Card View) - reduced particles and durations */}
+      {/* Hero Section (Card View) */}
       <main
         id="home"
         ref={heroRef}
@@ -230,12 +234,12 @@ function App() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, type: 'spring', stiffness: 100 }}
-          className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[80vh] text-center relative overflow-hidden"
+          transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
+          className="bg-white/95 backdrop-blur-xl shadow-xl rounded-3xl p-8 sm:p-12 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[80vh] text-center relative overflow-hidden"
         >
-          {/* Interactive Particles - reduced to 3 for performance */}
+          {/* Interactive Particles */}
           <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-            {[...Array(3)].map((_, i) => (
+            {[...Array(5)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute w-5 h-5 bg-yellow-400/40 rounded-full blur-sm"
@@ -246,7 +250,7 @@ function App() {
                   opacity: [0.4, 0.7, 0.4],
                 }}
                 transition={{
-                  duration: 3 + Math.random() * 3,
+                  duration: 5 + Math.random() * 5,
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}
@@ -257,7 +261,7 @@ function App() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
             className="text-5xl sm:text-7xl md:text-9xl font-extrabold text-black mb-6 sm:mb-8 leading-none drop-shadow-xl break-words tracking-tighter relative"
           >
             <motion.span className="flex items-center justify-center flex-wrap">
@@ -266,10 +270,12 @@ function App() {
                 src={logo}
                 alt="yellowgray Logo"
                 className="inline h-16 sm:h-28 md:h-36 max-h-[150px] sm:max-h-[250px] object-contain align-middle mx-3 sm:mx-4"
-                loading="eager" // Prioritize hero logo for LCP
-                initial={{ scale: 0.8, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
+                loading="lazy"
+                onLoad={() => setHeroLogoLoaded(true)}
+                initial={{ opacity: 0, scale: isMobile ? 0.95 : 0.8 }}
+                animate={heroLogoLoaded ? { opacity: 1, scale: 1 } : { opacity: 0 }}
+                whileHover={heroLogoLoaded ? { scale: 1.15, rotate: 8 } : {}}
+                transition={{ delay: 0.4, duration: 0.3, ease: 'easeOut' }}
                 style={{ verticalAlign: 'middle' }}
               />
             </motion.span>
@@ -277,7 +283,7 @@ function App() {
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6, ease: 'easeOut' }}
+            transition={{ delay: 0.4, duration: 0.8, ease: 'easeOut' }}
             className="text-lg sm:text-2xl md:text-3xl text-gray-700 max-w-lg sm:max-w-3xl md:max-w-5xl mb-6 sm:mb-8 leading-relaxed text-center"
           >
             We specialize in providing tailored IT solutions for small businesses, schools, and growing organizations.
@@ -297,8 +303,8 @@ function App() {
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6, ease: 'easeOut' }}
-            className="px-8 sm:px-12 py-4 sm:py-5 rounded-full bg-yellow-400 text-black font-bold shadow-2xl hover:bg-black hover:text-yellow-400 transition-all duration-200 text-lg sm:text-xl"
+            transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
+            className="px-8 sm:px-12 py-4 sm:py-5 rounded-full bg-yellow-400 text-black font-bold shadow-2xl hover:bg-black hover:text-yellow-400 transition-all duration-300 text-lg sm:text-xl"
           >
             Contact Us
           </motion.button>
@@ -318,7 +324,7 @@ function App() {
             <motion.button
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-200 text-base"
+              className="px-6 py-3 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-300 text-base"
             >
               Get Started
             </motion.button>
@@ -337,14 +343,14 @@ function App() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-          className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12"
+          transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
+          className="bg-white/95 backdrop-blur-xl shadow-xl rounded-3xl p-8 sm:p-12"
         >
           <motion.h3
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             className="text-4xl sm:text-5xl font-extrabold text-black mb-6 text-center"
           >
             Our Core Services
@@ -357,16 +363,16 @@ function App() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.4, delay: i * 0.1, ease: 'easeOut' }}
+                transition={{ duration: 0.6, delay: i * 0.15, ease: 'easeOut' }}
                 whileHover={{
                   scale: 1.05,
                   y: -8,
                   rotate: 1,
                   boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
                 }}
-                className="bg-white p-8 rounded-3xl shadow-lg border-2 border-transparent hover:border-yellow-400 transition-all duration-200 cursor-pointer will-change-transform relative overflow-hidden"
+                className="bg-white p-8 rounded-3xl shadow-lg border-2 border-transparent hover:border-yellow-400 transition-all duration-300 cursor-pointer will-change-transform relative overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="bg-yellow-400/20 p-5 rounded-2xl mb-6 inline-block relative z-10">
                   <i
                     data-feather={item.icon}
@@ -385,94 +391,92 @@ function App() {
         </motion.div>
       </section>
 
-      {/* About Us Section (Card View, Improved) - adjusted viewport for mobile visibility */}
+      {/* About Us Section (Card View) */}
       <section
         id="about"
-        className="py-12 px-4 relative z-20 max-w-screen-xl mx-auto" // Increased z-index
-        style={{ position: 'relative', display: isMobile ? 'block' : 'relative' }}
+        className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
+        style={{ position: 'relative' }}
       >
         <motion.div
-          initial={{ opacity: isMobile ? 1 : 0, scale: isMobile ? 1 : 0.95 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.1 }} // Reduced amount for faster trigger
-          transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-          className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12"
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
+          className="bg-white/95 backdrop-blur-xl shadow-xl rounded-3xl p-8 sm:p-12 flex flex-col lg:flex-row gap-12 items-start"
         >
-          <div className="flex flex-col lg:flex-row gap-12 items-start">
-            {/* Left Column: Why Choose Yellow Gray */}
-            <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <motion.h3
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.6 }}
-                className="text-4xl sm:text-5xl font-extrabold text-black mb-4"
-              >
-                Why Choose Yellow Gray
-              </motion.h3>
-              <motion.h4
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-xl sm:text-2xl text-gray-600 mb-6"
-              >
-                Your Trusted IT Partner
-              </motion.h4>
-              <div className="w-24 h-1 bg-yellow-400 mx-auto lg:mx-0 mb-8"></div>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-lg sm:text-xl text-gray-700 mb-6 leading-relaxed"
-              >
-                Based in Lusaka, Zambia, we’re a passionate team dedicated to making technology work for you. Our mission is to simplify IT for small businesses, schools, and growing organizations, ensuring seamless operations and growth.
-              </motion.p>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-lg sm:text-xl text-gray-700 leading-relaxed"
-              >
-                With a focus on innovation and reliability, we provide tailored solutions to help you navigate the digital landscape with confidence. Let us handle the tech, so you can focus on what you do best.
-              </motion.p>
-            </div>
+          {/* Left Column: Why Choose Yellow Gray */}
+          <div className="w-full lg:w-1/2 text-center lg:text-left">
+            <motion.h3
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.8 }}
+              className="text-4xl sm:text-5xl font-extrabold text-black mb-4"
+            >
+              Why Choose Yellow Gray
+            </motion.h3>
+            <motion.h4
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="text-xl sm:text-2xl text-gray-600 mb-6"
+            >
+              Your Trusted IT Partner
+            </motion.h4>
+            <div className="w-24 h-1 bg-yellow-400 mx-auto lg:mx-0 mb-8"></div>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-lg sm:text-xl text-gray-700 mb-6 leading-relaxed"
+            >
+              Based in Lusaka, Zambia, we’re a passionate team dedicated to making technology work for you. Our mission is to simplify IT for small businesses, schools, and growing organizations, ensuring seamless operations and growth.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-lg sm:text-xl text-gray-700 leading-relaxed"
+            >
+              With a focus on innovation and reliability, we provide tailored solutions to help you navigate the digital landscape with confidence. Let us handle the tech, so you can focus on what you do best.
+            </motion.p>
+          </div>
 
-            {/* Right Column: Enhanced Cards */}
-            <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {aboutCardsData.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, amount: 0.1 }}
-                    transition={{ duration: 0.4, delay: i * 0.1, type: 'spring', stiffness: 120 }}
-                    whileHover={{
-                      y: -8,
-                      rotate: 2,
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-                      scale: 1.05,
-                    }}
-                    className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 cursor-pointer transition-all duration-200 transform-gpu will-change-transform relative overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
-                    <div className="flex justify-center md:justify-start items-center mb-4 relative z-10">
-                      <div className="bg-yellow-400 p-4 rounded-2xl mr-4 shadow-md">
-                        <i data-feather={item.icon} className="text-white w-8 h-8"></i>
-                      </div>
+          {/* Right Column: Enhanced Cards */}
+          <div className="w-full lg:w-1/2 text-center lg:text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {aboutCardsData.map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 0.6, delay: i * 0.15, type: 'spring', stiffness: 120 }}
+                  whileHover={{
+                    y: -8,
+                    rotate: 2,
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                    scale: 1.05,
+                  }}
+                  className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 cursor-pointer transition-all duration-300 transform-gpu will-change-transform relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="flex justify-center md:justify-start items-center mb-4 relative z-10">
+                    <div className="bg-yellow-400 p-4 rounded-2xl mr-4 shadow-md">
+                      <i data-feather={item.icon} className="text-white w-8 h-8"></i>
                     </div>
-                    <p className="text-gray-800 font-bold text-xl mb-2">
-                      {item.title}
-                    </p>
-                    <p className="text-gray-600 text-base leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
+                  </div>
+                  <p className="text-gray-800 font-bold text-xl mb-2">
+                    {item.title}
+                  </p>
+                  <p className="text-gray-600 text-base leading-relaxed">
+                    {item.desc}
+                  </p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -487,28 +491,28 @@ function App() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-          className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12 max-w-3xl mx-auto relative overflow-hidden"
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
+          className="bg-white/95 backdrop-blur-xl shadow-xl rounded-3xl p-8 sm:p-12 max-w-3xl mx-auto relative overflow-hidden"
         >
           <motion.h3
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.8 }}
             className="text-4xl sm:text-5xl font-extrabold text-black mb-6 text-center"
           >
             Get in Touch
           </motion.h3>
           <div className="w-24 h-1 bg-yellow-400 mx-auto mb-10"></div>
-          {/* Animated Icons Background - reduced durations */}
+          {/* Animated Icons Background */}
           <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
             {['mail', 'phone', 'message-square', 'at-sign'].map((icon, i) => (
               <motion.div
                 key={icon}
                 className={`absolute w-8 h-8 text-yellow-500/20`}
                 animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-                transition={{ duration: 10 + i * 1.5, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 15 + i * 2, repeat: Infinity, ease: 'linear' }}
                 style={{
                   x: i % 2 === 0 ? -100 + i * 50 : 100 - i * 50,
                   y: i % 2 === 0 ? -80 + i * 40 : 80 - i * 40,
@@ -575,7 +579,7 @@ function App() {
                 boxShadow: '0 10px 20px rgba(250, 204, 21, 0.5)',
               }}
               whileTap={{ scale: 0.95 }}
-              className="w-full px-8 py-5 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-lg hover:bg-black hover:text-yellow-400 transition-all duration-200"
+              className="w-full px-8 py-5 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-lg hover:bg-black hover:text-yellow-400 transition-all duration-300"
             >
               Submit
             </motion.button>
@@ -587,8 +591,8 @@ function App() {
       <motion.footer
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.8 }}
         className="w-full bg-black text-gray-400 py-12 relative z-20"
       >
         <div className="max-w-screen-xl mx-auto px-4 text-center">
@@ -597,9 +601,9 @@ function App() {
               href="#"
               className="flex items-center justify-center mb-6"
               whileHover={{ scale: 1.1 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.3 }}
             >
-              <img src={whitelogo} alt="yellowgray Logo" loading="lazy" className="h-10 w-auto mr-3 object-contain" />
+              <img src={whitelogo} alt="yellowgray Logo" className="h-10 w-auto mr-3 object-contain" />
             </motion.a>
             <ul className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-6 font-semibold text-base">
               {['Home', 'About', 'Work', 'Contact'].map((item) => (
@@ -633,7 +637,7 @@ function App() {
         </div>
       </motion.footer>
 
-      {/* Custom Cursor - hidden on mobile */}
+      {/* Custom Cursor */}
       <div className="pointer-events-none fixed top-0 left-0 w-full h-full z-50 hidden sm:block">
         <motion.div
           className="w-5 h-5 bg-yellow-400 rounded-full shadow-lg opacity-80 border border-white/50"
