@@ -133,6 +133,4 @@ img.object-contain {
   .bg-grain { opacity: 0; }
   .blur-2xl { blur: 1rem; }
   .shadow-xl { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-  #about .flex { flex-direction: column; }
-  #about .grid { grid-template-columns: 1fr; }
 }

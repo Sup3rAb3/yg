@@ -3,11 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="preload" href="/index.css" as="style">
+<link rel="preload" href="/assets/logo.png" as="image">
+<link rel="preload" href="/assets/logo_white.png" as="image">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter+Variable&display=swap" as="style" onload="this.rel='stylesheet'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>YG</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+  if ("loading" in HTMLScriptElement.prototype) {
+    const css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "/index.css";
+    css.media = "print";
+    css.onload = () => (css.media = "all");
+    document.head.appendChild(css);
+  }
+</script>
   </body>
 </html>
