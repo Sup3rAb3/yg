@@ -41,11 +41,7 @@ const aboutCardsData = [
   { title: 'Personalized IT Solutions', desc: 'Tailored tech solutions to meet your unique needs.', icon: 'zap' },
   { title: 'Reliability and Support', desc: 'Dependable support to keep your systems running.', icon: 'shield' },
   { title: 'Innovation and Expertise', desc: 'Cutting-edge solutions backed by deep expertise.', icon: 'award' },
-  { title: 'Commitment to Security', desc: 'Robust security to protect your digital assets.', icon: 'lock' },
-  { title: 'Fostering Strong Relationships', desc: 'Building trust through strong partnerships.', icon: 'heart' },
-  { title: 'Trust and Transparency', desc: 'Clear communication and honest practices.', icon: 'users' },
   { title: 'Holistic IT Solutions', desc: 'Comprehensive services for all your IT needs.', icon: 'grid' },
-  { title: 'Cost-Effective Services', desc: 'Affordable solutions without compromising quality.', icon: 'dollar-sign' },
 ];
 
 function App() {
