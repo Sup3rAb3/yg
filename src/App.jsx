@@ -196,7 +196,7 @@ function App() {
                 transition={{ duration: 0.2 }}
                 className="absolute top-14 right-2 bg-white/80 shadow-xl rounded-xl p-4 w-40 border border-gray-100"
               >
-                {['Home', 'About', 'Work', 'Contact'].map((item) => (
+                {['Home', 'Services', 'About Us', 'Contact Us'].map((item) => (
                   <motion.li
                     key={item}
                     className="hover:text-yellow-400 transition-colors cursor-pointer px-4 py-2 rounded-lg hover:bg-gray-100/70 text-gray-800 font-semibold"
@@ -212,7 +212,7 @@ function App() {
           </AnimatePresence>
         </div>
         <ul className="hidden sm:flex flex-row gap-10 text-gray-800 font-semibold items-center text-lg">
-          {['Home', 'About', 'Work', 'Contact'].map((item) => (
+          {['Home', 'Services', 'About Us', 'Contact Us'].map((item) => (
             <motion.li
               key={item}
               className="hover:text-yellow-400 transition-colors cursor-pointer px-5 py-2 rounded-full hover:bg-gray-100/70"
@@ -336,7 +336,7 @@ function App() {
 
       {/* Services Section */}
       <AnimatedSection
-        id="work"
+        id="services"
         ref={servicesRef}
         className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
         initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
@@ -392,7 +392,7 @@ function App() {
 
       {/* About Us Section */}
       <AnimatedSection
-        id="about"
+        id="about us"
         className="py-12 px-4 relative z-20 max-w-screen-xl mx-auto"
         initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
         whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
@@ -480,7 +480,7 @@ function App() {
 
       {/* Contact Section */}
       <AnimatedSection
-        id="contact"
+        id="contact us"
         className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
         initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
         whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
@@ -603,7 +603,7 @@ function App() {
               <img src={whitelogo} alt="yellowgray Logo" loading="lazy" className="h-10 w-auto mr-3 object-contain" />
             </motion.a>
             <ul className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-6 font-semibold text-base">
-              {['Home', 'About', 'Work', 'Contact'].map((item) => (
+              {['Home', 'About Us', 'Services', 'Contact Us'].map((item) => (
                 <motion.li
                   key={item}
                   className="hover:text-yellow-400 transition-colors cursor-pointer"
