@@ -289,13 +289,9 @@ function App() {
             transition={!isMobile ? { delay: 0.4, duration: 0.6, ease: 'easeOut' } : false}
             className="text-lg sm:text-2xl md:text-3xl text-gray-700 max-w-lg sm:max-w-3xl md:max-w-5xl mb-6 sm:mb-8 leading-relaxed text-center"
           >
-            We specialize in providing tailored IT solutions for small businesses, schools, and growing organizations.
+            We specialize in providing tailored IT solutions for small to large businesses, and growing organizations.
             <br />
-            Our services include expert IT consultation, reliable support, and comprehensive equipment supply.
-            <br />
-            <span className="text-gray-500 text-base sm:text-xl md:text-2xl block mt-2 sm:mt-3">
-              We make technology simple, affordable, and effective—so you can focus on what matters most.
-            </span>
+
           </AnimatedWrapper>
           <AnimatedWrapper
             as="button"
