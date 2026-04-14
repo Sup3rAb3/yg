@@ -1,652 +1,317 @@
-import {
-  motion,
-  useMotionValue,
-  useScroll,
-  useTransform,
-  AnimatePresence,
-} from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion, useMotionValue, AnimatePresence } from 'framer-motion';
 import logo from './assets/logo.png';
 import whitelogo from './assets/logo_white.png';
-import '@fontsource-variable/inter';
-import './App.css';
-import './index.css';
-import { useEffect, useRef, useState } from 'react';
-import feather from 'feather-icons';
 
-// Data for Services and About sections
 const servicesData = [
   {
     title: 'IT Consultation & Support',
     desc: 'Expert IT consultation and support to optimize your technology and resolve issues efficiently.',
-    icon: 'message-circle',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    ),
   },
   {
     title: 'Web Development & Hosting',
     desc: 'Modern, secure web apps and hosting to elevate your online presence and reliability.',
-    icon: 'code',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+    ),
   },
   {
     title: 'Supply of IT Equipment',
     desc: 'Dependable procurement and provisioning of core IT equipment for businesses and schools.',
-    icon: 'truck',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+        <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+      </svg>
+    ),
   },
   {
     title: 'Device Repair & Maintenance',
     desc: 'Fast, professional device repair and maintenance to keep your operations running smoothly.',
-    icon: 'settings',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+        <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/>
+      </svg>
+    ),
   },
 ];
 
 const aboutCardsData = [
-  { title: 'Personalized IT Solutions', desc: 'Tailored tech solutions to meet your unique needs.', icon: 'zap' },
-  { title: 'Reliability and Support', desc: 'Dependable support to keep your systems running.', icon: 'shield' },
-  { title: 'Innovation and Expertise', desc: 'Cutting-edge solutions backed by deep expertise.', icon: 'award' },
-  { title: 'Holistic IT Solutions', desc: 'Comprehensive services for all your IT needs.', icon: 'grid' },
+  {
+    title: 'Personalized IT Solutions',
+    desc: 'Tailored tech solutions to meet your unique needs.',
+    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  },
+  {
+    title: 'Reliability and Support',
+    desc: 'Dependable support to keep your systems running.',
+    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  },
+  {
+    title: 'Innovation and Expertise',
+    desc: 'Cutting-edge solutions backed by deep expertise.',
+    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>,
+  },
+  {
+    title: 'Holistic IT Solutions',
+    desc: 'Comprehensive services for all your IT needs.',
+    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
+  },
 ];
 
-function App() {
-  // Detect mobile for adjustments
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+const NAV_ITEMS = ['Home', 'Services', 'About Us', 'Contact Us'];
 
-  // Custom cursor
+export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
 
-  // Services scroll-linked motion values
-  const servicesRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: servicesRef,
-    offset: ['start end', 'end start'],
-  });
-
-  // Floating CTA visibility
-  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
-    feather.replace();
-
-    const moveCursor = (e) => {
-      cursorX.set(e.clientX - 8);
-      cursorY.set(e.clientY - 8);
+    if (isMobile) return;
+    const onMove = (e) => { 
+        cursorX.set(e.clientX - 10); 
+        cursorY.set(e.clientY - 10); 
     };
-    if (!isMobile) {
-      window.addEventListener('mousemove', moveCursor);
-    }
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, [isMobile, cursorX, cursorY]);
 
-    const handleScroll = () => {
-      setShowFloatingCTA(window.scrollY > 300);
-    };
-    window.addEventListener('scroll', handleScroll);
-
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 640);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      if (!isMobile) {
-        window.removeEventListener('mousemove', moveCursor);
-      }
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [cursorX, cursorY, isMobile]);
-
-  // Parallax for hero
-  const heroRef = useRef(null);
-  const { scrollYProgress: heroProgress } = useScroll({ target: heroRef, offset: ['start end', 'end start'] });
-  const yParallax = useTransform(heroProgress, [0, 1], [0, -50]);
-
-  // State for hamburger menu
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Link behavior for smooth scrolling with offset
-  const handleNavLinkClick = (e) => {
-    e.preventDefault();
-    const targetId = e.target.textContent.toLowerCase();
-    const targetSection = document.getElementById(targetId);
-    if (targetSection) {
-      // Corrected selector to find the navigation element by its ID
-      const navHeight = document.getElementById('main-nav').offsetHeight || 56;
-      const offsetTop = targetSection.getBoundingClientRect().top + window.scrollY - navHeight - 20;
-      window.scrollTo({ top: offsetTop, behavior: 'smooth' });
-      setIsMenuOpen(false);
-    }
+  const scrollTo = (label) => {
+    const el = document.getElementById(label.toLowerCase());
+    if (!el) return;
+    const navH = document.getElementById('navbar')?.offsetHeight || 64;
+    window.scrollTo({ top: el.offsetTop - navH - 8, behavior: 'smooth' });
+    setMenuOpen(false);
   };
 
-  const AnimatedWrapper = isMobile ? 'div' : motion.div;
-  const AnimatedSection = isMobile ? 'section' : motion.section;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 font-sans relative">
-      {/* Grain Texture Overlay - reduced opacity for performance */}
-      <div className="fixed top-0 left-0 w-full h-full bg-grain opacity-5 pointer-events-none z-0"></div>
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 
-      {/* Glowing Background Shapes - reduced blur and duration for faster performance */}
-      {!isMobile && (
-        <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-          <motion.div
-            className="absolute w-64 h-64 opacity-25 blur-xl top-20 left-10 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
-            animate={{ y: [0, 40, 0], scale: [1, 1.15, 1] }}
-            transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute w-72 h-72 opacity-20 blur-xl top-1/2 right-10 bg-gradient-to-r from-gray-300 to-yellow-400 rounded-full"
-            animate={{ y: [0, -30, 0], scale: [1, 1.25, 1] }}
-            transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute w-56 h-56 opacity-25 blur-xl bottom-20 left-20 bg-gradient-to-r from-yellow-400 to-gray-300 rounded-full"
-            animate={{ x: [0, 25, 0], scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-          />
-        </div>
-      )}
+      <style>{`
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body {
+          font-family: 'DM Sans', system-ui, sans-serif;
+          background: #f4f4ef;
+          color: #111;
+          overflow-x: hidden;
+          cursor: ${isMobile ? 'auto' : 'none'};
+          -webkit-font-smoothing: antialiased;
+        }
+        .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+        .nav { position: sticky; top: 0; z-index: 100; background: rgba(244,244,239,0.9); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .nav-inner { max-width: 1080px; margin: 0 auto; padding: 0 20px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: relative; }
+        .nav-logo-btn { background: none; border: none; cursor: pointer; padding: 0; display: flex; }
+        .nav-logo { height: 34px; width: auto; }
+        .nav-links { display: flex; gap: 2px; list-style: none; }
+        .nav-link { padding: 8px 15px; border-radius: 99px; font-size: 13.5px; font-weight: 600; color: #333; cursor: pointer; transition: background .15s, color .15s; white-space: nowrap; list-style: none; }
+        .nav-link:hover { background: #facc15; color: #000; }
+        .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 6px; flex-direction: column; gap: 5px; }
+        .hamburger span { display: block; width: 22px; height: 2px; background: #111; border-radius: 2px; transition: transform .2s, opacity .2s; }
+        .mobile-menu { position: absolute; top: calc(100% + 6px); right: 0; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.13); border: 1px solid rgba(0,0,0,0.06); overflow: hidden; width: 190px; }
+        .mobile-item { padding: 13px 18px; font-size: 14px; font-weight: 600; color: #222; cursor: pointer; list-style: none; transition: background .12s; }
+        .mobile-item:hover { background: #fef9c3; }
+        @media (max-width: 767px) { .nav-links { display: none; } .hamburger { display: flex; } }
+        .hero-section { padding: 44px 0 32px; }
+        .section { padding: 0 0 32px; }
+        .card { background: #fff; border-radius: 22px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 18px rgba(0,0,0,0.05); }
+        .card-pad { padding: 44px 40px; }
+        @media (max-width: 600px) { .card-pad { padding: 28px 20px; } }
+        .hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+        .eyebrow { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; background: #fef3c7; padding: 5px 13px; border-radius: 99px; }
+        .hero-h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.9rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.1; color: #0a0a0a; letter-spacing: -.025em; }
+        .hero-h1 .accent { color: #f59e0b; }
+        .hero-sub { font-size: clamp(14px, 1.8vw, 16px); color: #555; line-height: 1.75; max-width: 480px; }
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .btn-y { padding: 12px 26px; border-radius: 99px; background: #facc15; color: #000; font-weight: 700; font-size: 13.5px; border: none; cursor: pointer; font-family: inherit; transition: background .15s, color .15s, transform .12s; }
+        .btn-y:hover { background: #111; color: #facc15; transform: translateY(-1px); }
+        .btn-outline { padding: 12px 26px; border-radius: 99px; background: transparent; color: #333; font-weight: 700; font-size: 13.5px; border: 2px solid #ddd; cursor: pointer; font-family: inherit; transition: border-color .15s, color .15s; }
+        .btn-outline:hover { border-color: #facc15; color: #000; }
+        .sec-head { text-align: center; margin-bottom: 32px; }
+        .sec-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; margin-bottom: 8px; }
+        .sec-title { font-family: 'Syne', sans-serif; font-size: clamp(1.55rem, 3.5vw, 2.25rem); font-weight: 800; color: #0a0a0a; letter-spacing: -.02em; line-height: 1.15; }
+        .sec-rule { width: 36px; height: 3px; background: #facc15; border-radius: 99px; margin: 10px auto 0; }
+        .srv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        @media (max-width: 860px) { .srv-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .srv-grid { grid-template-columns: 1fr; } }
+        .srv-item { background: #f7f7f3; border-radius: 14px; padding: 22px; border: 1.5px solid transparent; transition: border-color .2s, box-shadow .2s, transform .2s; }
+        .srv-item:hover { border-color: #facc15; box-shadow: 0 4px 18px rgba(250,204,21,.14); transform: translateY(-2px); }
+        .srv-icon { width: 42px; height: 42px; background: #fef9c3; border-radius: 11px; display: flex; align-items: center; justify-content: center; color: #ca8a04; margin-bottom: 14px; }
+        .srv-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 7px; line-height: 1.3; }
+        .srv-desc { font-size: 13px; color: #666; line-height: 1.6; }
+        .about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+        @media (max-width: 680px) { .about-layout { grid-template-columns: 1fr; gap: 24px; } }
+        .about-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; margin-bottom: 8px; }
+        .about-title { font-family: 'Syne', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; color: #0a0a0a; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 4px; }
+        .about-rule { width: 36px; height: 3px; background: #facc15; border-radius: 99px; margin: 10px 0 16px; }
+        .about-body { font-size: 14.5px; color: #555; line-height: 1.75; }
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 400px) { .about-grid { grid-template-columns: 1fr; } }
+        .about-item { background: #f7f7f3; border-radius: 13px; padding: 16px; border: 1px solid #e8e8e2; transition: border-color .18s; }
+        .about-item:hover { border-color: #facc15; }
+        .about-icon { width: 34px; height: 34px; background: #facc15; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #000; margin-bottom: 10px; }
+        .about-item-title { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 4px; }
+        .about-item-desc { font-size: 12.5px; color: #666; line-height: 1.55; }
+        .contact-wrap { max-width: 520px; margin: 0 auto; }
+        .contact-form { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+        .contact-input { width: 100%; padding: 12px 15px; border-radius: 11px; border: 1.5px solid #e0e0d8; font-size: 14px; font-family: inherit; color: #111; background: #fafaf6; outline: none; transition: border-color .18s, box-shadow .18s; }
+        .contact-input:focus { border-color: #facc15; box-shadow: 0 0 0 3px rgba(250,204,21,.18); background: #fff; }
+        textarea.contact-input { resize: vertical; min-height: 110px; }
+        .contact-submit { padding: 13px; border-radius: 99px; background: #facc15; color: #000; font-weight: 700; font-size: 14px; border: none; cursor: pointer; font-family: inherit; transition: background .15s, color .15s; }
+        .contact-submit:hover { background: #111; color: #facc15; }
+        .footer { background: #0a0a0a; color: #555; padding: 44px 20px 28px; margin-top: 32px; }
+        .footer-inner { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+        .footer-logo { height: 28px; opacity: .8; }
+        .footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; list-style: none; }
+        .footer-link { font-size: 13px; font-weight: 600; color: #555; cursor: pointer; transition: color .14s; }
+        .footer-link:hover { color: #facc15; }
+        .footer-copy { font-size: 11.5px; color: #3a3a3a; }
+        .cursor { position: fixed; top: 0; left: 0; width: 20px; height: 20px; border-radius: 50%; background: #facc15; pointer-events: none; z-index: 9999; mix-blend-mode: multiply; opacity: .8; }
+      `}</style>
 
-      {/* Sticky Navigation */}
-      <AnimatedWrapper
-        // Added id="main-nav" to allow the handleNavLinkClick function to select it
-        id="main-nav"
-        initial={!isMobile ? { y: -100 } : false}
-        animate={!isMobile ? { y: 0 } : false}
-        transition={!isMobile ? { duration: 0.6, ease: 'easeOut' } : false}
-        className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-3 sm:py-4 bg-white/80 shadow-lg sticky top-0 z-50 w-full max-w-screen-xl mx-auto rounded-b-2xl"
-      >
-        <button
-          onClick={() => window.location.reload()}
-          className="focus:outline-none"
-          aria-label="Reload Page"
-        >
-          <motion.img
-            src={logo}
-            alt="yellowgray Logo"
-            className="h-10 sm:h-12 w-auto object-contain"
-            loading="eager"
-            whileHover={!isMobile ? { scale: 1.15, rotate: 8 } : {}}
-            transition={!isMobile ? { duration: 0.2 } : {}}
-          />
-        </button>
-        <div className="sm:hidden relative">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="focus:outline-none p-2 ml-auto"
-            aria-label="Toggle Menu"
-          >
-            <svg
-              className="w-7 h-7 stroke-black"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d={isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16m-7 6h7'}
-              />
-            </svg>
+      <header className="nav" id="navbar">
+        <div className="nav-inner">
+          <button className="nav-logo-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <img src={logo} alt="Yellow Gray" className="nav-logo" />
+          </button>
+          <ul className="nav-links">
+            {NAV_ITEMS.map(item => (
+              <li key={item} className="nav-link" onClick={() => scrollTo(item)}>{item}</li>
+            ))}
+          </ul>
+          <button className="hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu">
+            <span style={menuOpen ? { transform: 'rotate(45deg) translate(5px,5px)' } : {}} />
+            <span style={menuOpen ? { opacity: 0 } : {}} />
+            <span style={menuOpen ? { transform: 'rotate(-45deg) translate(5px,-5px)' } : {}} />
           </button>
           <AnimatePresence>
-            {isMenuOpen && (
+            {menuOpen && (
               <motion.ul
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                className="absolute top-14 right-2 bg-white/80 shadow-xl rounded-xl p-4 w-40 border border-gray-100"
+                className="mobile-menu"
+                initial={{ opacity: 0, y: -8, scale: .97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: .97 }}
+                transition={{ duration: .14 }}
               >
-                {['Home', 'Services', 'About Us', 'Contact Us'].map((item) => (
-                  <motion.li
-                    key={item}
-                    className="hover:text-yellow-400 transition-colors cursor-pointer px-4 py-2 rounded-lg hover:bg-gray-100/70 text-gray-800 font-semibold"
-                    whileHover={{ scale: 1.05, color: '#facc15' }}
-                    transition={{ duration: 0.1 }}
-                    onClick={handleNavLinkClick}
-                  >
-                    {item}
-                  </motion.li>
+                {NAV_ITEMS.map(item => (
+                  <li key={item} className="mobile-item" onClick={() => scrollTo(item)}>{item}</li>
                 ))}
               </motion.ul>
             )}
           </AnimatePresence>
         </div>
-        <ul className="hidden sm:flex flex-row gap-10 text-gray-800 font-semibold items-center text-lg">
-          {['Home', 'Services', 'About Us', 'Contact Us'].map((item) => (
-            <motion.li
-              key={item}
-              className="hover:text-yellow-400 transition-colors cursor-pointer px-5 py-2 rounded-full hover:bg-gray-100/70"
-              whileHover={{ scale: 1.1, color: '#facc15' }}
-              transition={{ duration: 0.1 }}
-              onClick={handleNavLinkClick}
-            >
-              {item}
-            </motion.li>
-          ))}
-        </ul>
-      </AnimatedWrapper>
+      </header>
 
-      {/* Hero Section */}
-      <main
-        id="home"
-        ref={heroRef}
-        className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
-        style={!isMobile ? { position: 'relative', y: yParallax } : {}}
-      >
-        <AnimatedWrapper
-          initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
-          whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={!isMobile ? { duration: 0.7, type: 'spring', stiffness: 100 } : false}
-          className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[80vh] text-center relative overflow-hidden"
-        >
-          {/* Interactive Particles */}
-          {!isMobile && (
-            <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-              {[...Array(3)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-5 h-5 bg-yellow-400/40 rounded-full blur-sm"
-                  animate={{
-                    x: [Math.random() * 100 - 50, Math.random() * 100 - 50],
-                    y: [Math.random() * 100 - 50, Math.random() * 100 - 50],
-                    scale: [1, 1.3, 1],
-                    opacity: [0.4, 0.7, 0.4],
-                  }}
-                  transition={{
-                    duration: 3 + Math.random() * 3,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                />
-              ))}
-            </div>
-          )}
-          <AnimatedWrapper
-            initial={!isMobile ? { opacity: 0, y: 30 } : false}
-            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={!isMobile ? { duration: 0.7, ease: 'easeOut' } : false}
-            className="text-5xl sm:text-7xl md:text-9xl font-extrabold text-black mb-6 sm:mb-8 leading-none drop-shadow-xl break-words tracking-tighter relative"
-          >
-            <motion.span className="flex items-center justify-center flex-wrap">
-              Choose{' '}
-              <motion.img
-                src={logo}
-                alt="yellowgray Logo"
-                className="inline h-16 sm:h-28 md:h-36 max-h-[150px] sm:max-h-[250px] object-contain align-middle mx-3 sm:mx-4"
-                loading="eager"
-                initial={!isMobile ? { scale: 0.8, opacity: 0 } : {}}
-                whileInView={!isMobile ? { scale: 1, opacity: 1 } : {}}
-                transition={!isMobile ? { delay: 0.3, duration: 0.6, ease: 'easeOut' } : {}}
-                style={{ verticalAlign: 'middle' }}
-              />
-            </motion.span>
-          </AnimatedWrapper>
-          <AnimatedWrapper
-            initial={!isMobile ? { opacity: 0, y: 30 } : false}
-            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-            transition={!isMobile ? { delay: 0.4, duration: 0.6, ease: 'easeOut' } : false}
-            className="text-lg sm:text-2xl md:text-3xl text-gray-700 max-w-lg sm:max-w-3xl md:max-w-5xl mb-6 sm:mb-8 leading-relaxed text-center"
-          >
-            We specialize in providing tailored IT solutions for small to large businesses, and growing organizations.
-            <br />
-
-          </AnimatedWrapper>
-          <AnimatedWrapper
-            as="button"
-            whileHover={!isMobile ? {
-              scale: 1.15,
-              rotate: 3,
-              boxShadow: '0 12px 24px rgba(250, 204, 21, 0.4)',
-            } : {}}
-            whileTap={!isMobile ? { scale: 0.95 } : {}}
-            initial={!isMobile ? { opacity: 0, y: 30 } : false}
-            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-            transition={!isMobile ? { delay: 0.5, duration: 0.6, ease: 'easeOut' } : false}
-            className="px-8 sm:px-12 py-4 sm:py-5 rounded-full bg-yellow-400 text-black font-bold shadow-2xl hover:bg-black hover:text-yellow-400 transition-all duration-200 text-lg sm:text-xl"
-          >
-            Contact Us
-          </AnimatedWrapper>
-        </AnimatedWrapper>
-      </main>
-
-      {/* Floating CTA Button */}
-      {!isMobile && (
-        <AnimatePresence>
-          {showFloatingCTA && (
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 100 }}
-              transition={{ duration: 0.3 }}
-              className="fixed bottom-6 right-6 z-50"
-            >
-              <motion.button
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 rounded-full bg-yellow-400 text-black font-bold shadow-xl hover:bg-black hover:text-yellow-400 transition-all duration-200 text-base"
-              >
-                Get Started
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      )}
-
-      {/* Services Section */}
-      <AnimatedSection
-        id="services"
-        ref={servicesRef}
-        className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
-        initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
-        whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={!isMobile ? { duration: 0.6, type: 'spring', stiffness: 100 } : false}
-      >
-        <div className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12">
-          <AnimatedWrapper
-            initial={!isMobile ? { opacity: 0, y: 30 } : false}
-            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={!isMobile ? { duration: 0.6 } : false}
-            className="text-4xl sm:text-5xl font-extrabold text-black mb-6 text-center"
-          >
-            Our Core Services
-          </AnimatedWrapper>
-          <div className="w-24 h-1 bg-yellow-400 mx-auto mb-10"></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {servicesData.map((item, i) => (
-              <AnimatedWrapper
-                key={item.title}
-                initial={!isMobile ? { opacity: 0, y: 30 } : false}
-                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={!isMobile ? { duration: 0.4, delay: i * 0.1, ease: 'easeOut' } : false}
-                whileHover={!isMobile ? {
-                  scale: 1.05,
-                  y: -8,
-                  rotate: 1,
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-                } : {}}
-                className="bg-white p-8 rounded-3xl shadow-lg border-2 border-transparent hover:border-yellow-400 transition-all duration-200 cursor-pointer will-change-transform relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
-                <div className="bg-yellow-400/20 p-5 rounded-2xl mb-6 inline-block relative z-10">
-                  <i
-                    data-feather={item.icon}
-                    className="w-12 h-12 mx-auto text-yellow-500"
-                  ></i>
-                </div>
-                <h4 className="text-2xl font-bold mb-3 text-gray-900">
-                  {item.title}
-                </h4>
-                <p className="text-gray-700 leading-relaxed text-base">
-                  {item.desc}
-                </p>
-              </AnimatedWrapper>
-            ))}
-          </div>
-        </div>
-      </AnimatedSection>
-
-      {/* About Us Section */}
-      <AnimatedSection
-        id="about us"
-        className="py-12 px-4 relative z-20 max-w-screen-xl mx-auto"
-        initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
-        whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={!isMobile ? { duration: 0.6, type: 'spring', stiffness: 100 } : false}
-      >
-        <div className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12">
-          <div className="flex flex-col lg:flex-row gap-12 items-start">
-            <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <AnimatedWrapper
-                initial={!isMobile ? { opacity: 0, y: 30 } : false}
-                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={!isMobile ? { duration: 0.6 } : false}
-                className="text-4xl sm:text-5xl font-extrabold text-black mb-4"
-              >
-                Why Choose Yellow Gray
-              </AnimatedWrapper>
-              <AnimatedWrapper
-                initial={!isMobile ? { opacity: 0, y: 30 } : false}
-                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={!isMobile ? { duration: 0.6, delay: 0.1 } : false}
-                className="text-xl sm:text-2xl text-gray-600 mb-6"
-              >
-                Your Trusted IT Partner
-              </AnimatedWrapper>
-              <div className="w-24 h-1 bg-yellow-400 mx-auto lg:mx-0 mb-8"></div>
-              <AnimatedWrapper
-                initial={!isMobile ? { opacity: 0, y: 30 } : false}
-                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={!isMobile ? { duration: 0.6, delay: 0.2 } : false}
-                className="text-lg sm:text-xl text-gray-700 mb-6 leading-relaxed"
-              >
-                Based in Lusaka, Zambia, we’re a passionate team dedicated to making technology work for you. Our mission is to simplify IT for small businesses, schools, and growing organizations, ensuring seamless operations and growth.
-              </AnimatedWrapper>
-              <AnimatedWrapper
-                initial={!isMobile ? { opacity: 0, y: 30 } : false}
-                whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={!isMobile ? { duration: 0.6, delay: 0.3 } : false}
-                className="text-lg sm:text-xl text-gray-700 leading-relaxed"
-              >
-                With a focus on innovation and reliability, we provide tailored solutions to help you navigate the digital landscape with confidence. Let us handle the tech, so you can focus on what you do best.
-              </AnimatedWrapper>
-            </div>
-
-            <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {aboutCardsData.map((item, i) => (
-                  <AnimatedWrapper
-                    key={i}
-                    initial={!isMobile ? { opacity: 0, y: 30, scale: 0.95 } : false}
-                    whileInView={!isMobile ? { opacity: 1, y: 0, scale: 1 } : false}
-                    viewport={{ once: true, amount: 0.1 }}
-                    transition={!isMobile ? { duration: 0.4, delay: i * 0.1, type: 'spring', stiffness: 120 } : false}
-                    whileHover={!isMobile ? {
-                      y: -8,
-                      rotate: 2,
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-                      scale: 1.05,
-                    } : {}}
-                    className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 cursor-pointer transition-all duration-200 transform-gpu will-change-transform relative overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
-                    <div className="flex justify-center md:justify-start items-center mb-4 relative z-10">
-                      <div className="bg-yellow-400 p-4 rounded-2xl mr-4 shadow-md">
-                        <i data-feather={item.icon} className="text-white w-8 h-8"></i>
-                      </div>
-                    </div>
-                    <p className="text-gray-800 font-bold text-xl mb-2">
-                      {item.title}
-                    </p>
-                    <p className="text-gray-600 text-base leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </AnimatedWrapper>
-                ))}
+      <div id="home" className="wrap">
+        <section className="hero-section">
+          <motion.div className="card card-pad" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5, ease: 'easeOut' }}>
+            <div className="hero-inner">
+              <span className="eyebrow">IT Solutions · Lusaka, Zambia</span>
+              <h1 className="hero-h1">Choose <span className="accent">Yellow Gray</span></h1>
+              <p className="hero-sub">We specialize in providing tailored IT solutions for small to large businesses, and growing organizations.</p>
+              <div className="btn-row">
+                <button className="btn-y" onClick={() => scrollTo('Contact Us')}>Contact Us</button>
+                <button className="btn-outline" onClick={() => scrollTo('Services')}>Our Services</button>
               </div>
             </div>
-          </div>
-        </div>
-      </AnimatedSection>
+          </motion.div>
+        </section>
+      </div>
 
-      {/* Contact Section */}
-      <AnimatedSection
-        id="contact us"
-        className="py-12 px-4 relative z-10 max-w-screen-xl mx-auto"
-        initial={!isMobile ? { opacity: 0, scale: 0.95 } : false}
-        whileInView={!isMobile ? { opacity: 1, scale: 1 } : false}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={!isMobile ? { duration: 0.6, type: 'spring', stiffness: 100 } : false}
-      >
-        <div className="bg-white/80 shadow-xl rounded-3xl p-8 sm:p-12 max-w-3xl mx-auto relative overflow-hidden">
-          <AnimatedWrapper
-            initial={!isMobile ? { opacity: 0, y: 30 } : false}
-            whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={!isMobile ? { duration: 0.6 } : false}
-            className="text-4xl sm:text-5xl font-extrabold text-black mb-6 text-center"
-          >
-            Get in Touch
-          </AnimatedWrapper>
-          <div className="w-24 h-1 bg-yellow-400 mx-auto mb-10"></div>
-          {/* Animated Icons Background */}
-          {!isMobile && (
-            <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-              {['mail', 'phone', 'message-square', 'at-sign'].map((icon, i) => (
-                <motion.div
-                  key={icon}
-                  className={`absolute w-8 h-8 text-yellow-500/20`}
-                  animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-                  transition={{ duration: 10 + i * 1.5, repeat: Infinity, ease: 'linear' }}
-                  style={{
-                    x: i % 2 === 0 ? -100 + i * 50 : 100 - i * 50,
-                    y: i % 2 === 0 ? -80 + i * 40 : 80 - i * 40,
-                  }}
-                >
-                  <i data-feather={icon} className="w-full h-full"></i>
+      <div id="services" className="wrap">
+        <section className="section">
+          <motion.div className="card card-pad" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
+            <div className="sec-head">
+              <p className="sec-eyebrow">What We Do</p>
+              <h2 className="sec-title">Our Core Services</h2>
+              <div className="sec-rule" />
+            </div>
+            <div className="srv-grid">
+              {servicesData.map((s, i) => (
+                <motion.div key={i} className="srv-item" initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .32, delay: i * .07 }}>
+                  <div className="srv-icon">{s.icon}</div>
+                  <div className="srv-title">{s.title}</div>
+                  <div className="srv-desc">{s.desc}</div>
                 </motion.div>
               ))}
             </div>
-          )}
-          {/* Form Content */}
-          <form className="space-y-8 relative z-10">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-left text-base font-semibold text-gray-800 mb-2"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Your Name"
-                className="w-full px-6 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all text-black text-base"
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-left text-base font-semibold text-gray-800 mb-2"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Your Email"
-                className="w-full px-6 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all text-black text-base"
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-left text-base font-semibold text-gray-800 mb-2"
-              >
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows="5"
-                placeholder="Your Message"
-                className="w-full px-6 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all text-black text-base"
-                required
-              ></textarea>
-            </div>
-            <AnimatedWrapper
-              as="button"
-              type="submit"
-              whileHover={!isMobile ? {
-                scale: 1.05,
-                boxShadow: '0 10px 20px rgba(250, 204, 21, 0.5)',
-              } : {}}
-              whileTap={!isMobile ? { scale: 0.95 } : {}}
-              className="w-full px-8 py-5 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-lg hover:bg-black hover:text-yellow-400 transition-all duration-200"
-            >
-              Submit
-            </AnimatedWrapper>
-          </form>
-        </div>
-      </AnimatedSection>
+          </motion.div>
+        </section>
+      </div>
 
-      {/* Footer */}
-      <AnimatedWrapper
-        as="footer"
-        initial={!isMobile ? { opacity: 0, y: 50 } : false}
-        whileInView={!isMobile ? { opacity: 1, y: 0 } : false}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={!isMobile ? { duration: 0.6 } : false}
-        className="w-full bg-black text-gray-400 py-12 relative z-20"
-      >
-        <div className="max-w-screen-xl mx-auto px-4 text-center">
-          <div className="flex flex-col items-center">
-            <motion.a
-              href="#"
-              className="flex items-center justify-center mb-6"
-              whileHover={{ scale: 1.1 }}
-              transition={{ duration: 0.2 }}
-            >
-              <img src={whitelogo} alt="yellowgray Logo" loading="lazy" className="h-10 w-auto mr-3 object-contain" />
-            </motion.a>
-            <ul className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-6 font-semibold text-base">
-              {['Home', 'About Us', 'Services', 'Contact Us'].map((item) => (
-                <motion.li
-                  key={item}
-                  className="hover:text-yellow-400 transition-colors cursor-pointer"
-                  whileHover={{ scale: 1.1, color: '#facc15' }}
-                  onClick={handleNavLinkClick}
-                >
-                  {item}
-                </motion.li>
-              ))}
-            </ul>
-            <div className="flex justify-center gap-8 mb-6">
-              {['facebook', 'twitter', 'linkedin', 'instagram'].map((social) => (
-                <motion.a
-                  key={social}
-                  href="#"
-                  aria-label={social.charAt(0).toUpperCase() + social.slice(1)}
-                  className="text-gray-400 hover:text-yellow-400 transition-colors"
-                  whileHover={{ y: -6 }}
-                >
-                  <i data-feather={social} className="w-7 h-7"></i>
-                </motion.a>
-              ))}
+      <div id="about us" className="wrap">
+        <section className="section">
+          <motion.div className="card card-pad" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
+            <div className="about-layout">
+              <div>
+                <p className="about-eyebrow">Who We Are</p>
+                <h2 className="about-title">Why Choose Yellow Gray</h2>
+                <div className="about-rule" />
+                <p className="about-body">Based in Lusaka, Zambia, we're a passionate team dedicated to making technology work for you.</p>
+              </div>
+              <div className="about-grid">
+                {aboutCardsData.map((a, i) => (
+                  <motion.div key={i} className="about-item" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .28, delay: i * .06 }}>
+                    <div className="about-icon">{a.icon}</div>
+                    <div className="about-item-title">{a.title}</div>
+                    <div className="about-item-desc">{a.desc}</div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-            <p className="text-sm text-gray-500">
-              © {new Date().getFullYear()}. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </AnimatedWrapper>
+          </motion.div>
+        </section>
+      </div>
 
-      {/* Custom Cursor - hidden on mobile */}
+      <div id="contact us" className="wrap">
+        <section className="section">
+          <motion.div className="card card-pad contact-wrap" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
+            <div className="sec-head" style={{ marginBottom: 0 }}>
+              <p className="sec-eyebrow">Reach Out</p>
+              <h2 className="sec-title">Get in Touch</h2>
+              <div className="sec-rule" />
+            </div>
+            <div className="contact-form">
+              <input type="text" placeholder="Name" className="contact-input" />
+              <input type="email" placeholder="Email" className="contact-input" />
+              <textarea placeholder="Message" className="contact-input" rows="5" />
+              <button type="submit" className="contact-submit">Submit</button>
+            </div>
+          </motion.div>
+        </section>
+      </div>
+
+      <footer className="footer">
+        <div className="footer-inner">
+          <img src={whitelogo} alt="Yellow Gray" className="footer-logo" />
+          <ul className="footer-links">
+            {NAV_ITEMS.map(item => (
+              <li key={item} className="footer-link" onClick={() => scrollTo(item)}>{item}</li>
+            ))}
+          </ul>
+          <p className="footer-copy">© {new Date().getFullYear()}. All rights reserved.</p>
+        </div>
+      </footer>
+
       {!isMobile && (
-        <div className="pointer-events-none fixed top-0 left-0 w-full h-full z-50">
-          <motion.div
-            className="w-5 h-5 bg-yellow-400 rounded-full shadow-lg opacity-80 border border-white/50"
-            style={{ x: cursorX, y: cursorY }}
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ repeat: Infinity, duration: 0.8, ease: 'easeInOut' }}
-          />
-        </div>
+        <motion.div className="cursor" style={{ x: cursorX, y: cursorY }} />
       )}
-    </div>
+    </>
   );
 }
-
-export default App;

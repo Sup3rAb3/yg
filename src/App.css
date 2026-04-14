@@ -1,30 +1,9 @@
+/* Reset root padding that was conflicting with inner max-width containers */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
 /* Hide default cursor only on desktop */
@@ -34,89 +13,37 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-.card {
-  /* other styles */
-  background-color: rgba(255, 255, 255, 0.1); /* You can keep or change this */
-  /* Remove the backdrop-filter property entirely */
-}
-
-
-
-/* Base styles for the glowing card effect */
-.glowing-circle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0;
-  animation: glow-animation 25s ease-in-out infinite;
-}
-
-/* Hero Section */
-.h-screen {
-  height: 100vh;
-}
-
-
-/* Grain texture for modern aesthetic */
-.bg-grain {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-}
-
 /* Global styles */
 body {
   margin: 0;
+  padding: 0;
   font-family: 'Inter Variable', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f9fafb;
 }
 
-/* Smooth scrolling for anchor links */
+/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
-/* Ensure sticky navigation */
-nav {
-  position: sticky !important;
+/* Sticky nav */
+nav,
+[id="main-nav"] {
+  position: sticky;
   top: 0;
   z-index: 50;
 }
 
-/* Enhanced card hover effects */
-.card {
-  transition: all 0.2s ease;
-}
-
-/* Input and textarea focus states */
+/* Input focus glow */
 input:focus,
 textarea:focus {
-  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.3);
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.25);
 }
 
-/* Responsive typography */
-@media (max-width: 640px) {
-  .text-9xl { font-size: 3rem; }
-  .text-7xl { font-size: 2.25rem; }
-  .text-5xl { font-size: 1.75rem; }
-  .text-4xl { font-size: 1.5rem; }
-  .text-3xl { font-size: 1.25rem; }
-}
-
-/* Ensure feather icons render crisply */
+/* Feather icons render crisply */
 svg.feather {
   stroke-width: 2;
   stroke-linecap: round;
@@ -126,11 +53,4 @@ svg.feather {
 /* Prevent logo stretching */
 img.object-contain {
   object-fit: contain;
-}
-
-/* Mobile optimizations */
-@media (max-width: 640px) {
-  .bg-grain { opacity: 0; }
-  .blur-2xl { blur: 1rem; }
-  .shadow-xl { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 }
