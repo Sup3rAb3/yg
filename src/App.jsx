@@ -68,6 +68,40 @@ const aboutCardsData = [
 const NAV_ITEMS = ['Home', 'Services', 'About Us', 'Contact Us'];
 
 export default function App() {
+  // --- FORM LOGIC ---
+  const FORM_ENDPOINT = "https://script.google.com/macros/s/AKfycbzMsVxYs-cUDKto85JUqkzaMRp8e2DkQWjNdrAdLUR5QdvX283k-v3oYP7Jy2yRAa-oOg/exec"; 
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formStatus, setFormStatus] = useState('Submit');
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setFormStatus('Sending...');
+
+    // Convert formData to URLSearchParams
+    const formBody = new URLSearchParams();
+    for (const key in formData) {
+      formBody.append(key, formData[key]);
+    }
+
+    try {
+      await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formBody,
+      });
+      setFormStatus('Message sent!');
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setFormStatus('Submit'), 3000);
+    } catch (error) {
+      setFormStatus('Error, try again');
+    }
+  };
+  // ------------------
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -87,7 +121,6 @@ export default function App() {
 
   useEffect(() => {
     if (isMobile) return;
-
     let raf;
     const onMove = (e) => {
       cancelAnimationFrame(raf);
@@ -96,7 +129,6 @@ export default function App() {
         cursorY.set(e.clientY);
       });
     };
-
     window.addEventListener('mousemove', onMove, { passive: true });
     return () => {
       window.removeEventListener('mousemove', onMove);
@@ -117,64 +149,22 @@ export default function App() {
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
-        rel="stylesheet"
-      />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
 
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; overflow-x: clip; }
-
-        body {
-          font-family: 'Inter', sans-serif;
-          background: #f4f4ef;
-          color: #111;
-          overflow-x: clip;
-          cursor: none !important;
-          -webkit-font-smoothing: antialiased;
-        }
-
-        button, a, li, .nav-link, .mobile-item, .btn-y, .btn-outline, .contact-submit, .hamburger, .contact-input, textarea.contact-input, .footer-links, .footer-copy {
-          cursor: none !important;
-        }
-
+        body { font-family: 'Inter', sans-serif; background: #f4f4ef; color: #111; overflow-x: clip; cursor: none !important; -webkit-font-smoothing: antialiased; }
+        button, a, li, .nav-link, .mobile-item, .btn-y, .btn-outline, .contact-submit, .hamburger, .contact-input, textarea.contact-input, .footer-links, .footer-copy { cursor: none !important; }
         .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
-
         .nav { position: sticky; top: 0; z-index: 100; background: rgba(244,244,239,0.9); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(0,0,0,0.08); transition: background 0.3s, box-shadow 0.3s; }
         .nav.scrolled { background: rgba(244, 244, 239, 0.95); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .nav-inner { max-width: 1080px; margin: 0 auto; padding: 0 20px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: relative; }
-        
         .nav-logo-btn { background: none; border: none; padding: 0; display: flex; align-items: center; justify-content: center; }
         .nav-logo { height: 32px; width: auto; display: block; }
-        
-        .inline-logo {
-          height: 1.0em;
-          vertical-align: middle;
-          position: relative;
-          top: -0.05em;
-          margin: 0 -2px; 
-        }
-        
-        /* --- Underline Style --- 
-          Replaces the scribble effect with a clean underline
-        */
-        .hero-h1-underline {
-          position: relative;
-          display: inline-block;
-          color: #facc15;
-        }
-        .hero-h1-underline::after {
-          content: '';
-          position: absolute;
-          left: 0;
-          bottom: 2px;
-          width: 100%;
-          height: 3px;
-          background: #000;
-          border-radius: 99px;
-        }
-
+        .inline-logo { height: 1.0em; vertical-align: middle; position: relative; top: -0.05em; margin: 0 -2px; }
+        .hero-h1-underline { position: relative; display: inline-block; color: #facc15; }
+        .hero-h1-underline::after { content: ''; position: absolute; left: 0; bottom: 2px; width: 100%; height: 3px; background: #000; border-radius: 99px; }
         .nav-links { display: flex; gap: 2px; list-style: none; }
         .nav-link { padding: 8px 15px; border-radius: 99px; font-size: 13.5px; font-weight: 600; color: #333; transition: background .15s, color .15s; white-space: nowrap; cursor: pointer; }
         .nav-link:hover { background: #facc15; color: #000; }
@@ -183,18 +173,12 @@ export default function App() {
         .mobile-menu { position: absolute; top: calc(100% + 6px); right: 20px; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.13); border: 1px solid rgba(0,0,0,0.06); overflow: hidden; width: 190px; }
         .mobile-item { padding: 13px 18px; font-size: 14px; font-weight: 600; color: #222; transition: background .12s; cursor: pointer; }
         .mobile-item:hover { background: #fef9c3; }
-
-        @media (max-width: 767px) {
-          .nav-links { display: none; }
-          .hamburger { display: flex; }
-        }
-
+        @media (max-width: 767px) { .nav-links { display: none; } .hamburger { display: flex; } }
         .hero-section { padding: 44px 0 32px; }
         .section { padding: 0 0 32px; }
         .card { background: #fff; border-radius: 22px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 18px rgba(0,0,0,0.05); }
         .card-pad { padding: 44px 40px; }
         @media (max-width: 600px) { .card-pad { padding: 28px 20px; } }
-
         .hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
         .eyebrow { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; background: #fef3c7; padding: 5px 13px; border-radius: 99px; }
         .hero-h1 { font-weight: 800; font-size: clamp(1.9rem, 5vw, 3.4rem); line-height: 1.1; color: #0a0a0a; letter-spacing: -.025em; text-transform: uppercase; }
@@ -204,12 +188,10 @@ export default function App() {
         .btn-y:hover { background: #111; color: #facc15; transform: translateY(-1px); }
         .btn-outline { padding: 12px 26px; border-radius: 99px; background: transparent; color: #333; font-weight: 700; font-size: 13.5px; border: 2px solid #ddd; font-family: inherit; transition: border-color .15s, color .15s; cursor: pointer; }
         .btn-outline:hover { border-color: #facc15; color: #000; }
-
         .sec-head { text-align: center; margin-bottom: 32px; }
         .sec-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; margin-bottom: 8px; }
         .sec-title { font-weight: 800; font-size: clamp(1.55rem, 3.5vw, 2.25rem); color: #0a0a0a; letter-spacing: -.02em; line-height: 1.15; text-transform: uppercase; }
         .sec-rule { width: 36px; height: 3px; background: #facc15; border-radius: 99px; margin: 10px auto 0; }
-
         .srv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
         @media (max-width: 860px) { .srv-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 480px) { .srv-grid { grid-template-columns: 1fr; } }
@@ -218,7 +200,6 @@ export default function App() {
         .srv-icon { width: 42px; height: 42px; background: #fef9c3; border-radius: 11px; display: flex; align-items: center; justify-content: center; color: #ca8a04; margin-bottom: 14px; }
         .srv-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 7px; line-height: 1.3; }
         .srv-desc { font-size: 13px; color: #666; line-height: 1.6; }
-
         .about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
         @media (max-width: 680px) { .about-layout { grid-template-columns: 1fr; gap: 24px; } }
         .about-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; margin-bottom: 8px; }
@@ -232,7 +213,6 @@ export default function App() {
         .about-icon { width: 34px; height: 34px; background: #facc15; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #000; margin-bottom: 10px; }
         .about-item-title { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 4px; }
         .about-item-desc { font-size: 12.5px; color: #666; line-height: 1.55; }
-
         .contact-wrap { max-width: 520px; margin: 0 auto; }
         .contact-form { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
         .contact-input { width: 100%; padding: 12px 15px; border-radius: 11px; border: 1.5px solid #e0e0d8; font-size: 14px; font-family: inherit; color: #111; background: #fafaf6; outline: none; transition: border-color .18s, box-shadow .18s; }
@@ -240,7 +220,6 @@ export default function App() {
         textarea.contact-input { resize: vertical; min-height: 110px; }
         .contact-submit { padding: 13px; border-radius: 99px; background: #facc15; color: #000; font-weight: 700; font-size: 14px; border: none; font-family: inherit; transition: background .15s, color .15s; cursor: pointer; }
         .contact-submit:hover { background: #111; color: #facc15; }
-
         .footer { background: #0a0a0a; color: #555; padding: 44px 20px 28px; margin-top: 32px; }
         .footer-inner { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 18px; }
         .footer-logo { height: 28px; opacity: .8; }
@@ -248,20 +227,7 @@ export default function App() {
         .footer-link { font-size: 13px; font-weight: 600; color: #555; transition: color .14s; cursor: pointer; }
         .footer-link:hover { color: #facc15; }
         .footer-copy { font-size: 11.5px; color: #3a3a3a; }
-
-        .cursor {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: #facc15;
-          pointer-events: none;
-          z-index: 9999999;
-          opacity: 0.95;
-          will-change: transform;
-        }
+        .cursor { position: fixed; top: 0; left: 0; width: 20px; height: 20px; border-radius: 50%; background: #facc15; pointer-events: none; z-index: 9999999; opacity: 0.95; will-change: transform; }
       `}</style>
 
       <header className={`nav ${isScrolled ? 'scrolled' : ''}`} id="navbar">
@@ -269,28 +235,19 @@ export default function App() {
           <button className="nav-logo-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <img src={logo} alt="Yellow Gray" className="nav-logo" />
           </button>
-
           <ul className="nav-links">
             {NAV_ITEMS.map(item => (
               <li key={item} className="nav-link" onClick={() => scrollTo(item)}>{item}</li>
             ))}
           </ul>
-
           <button className="hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu">
             <span style={menuOpen ? { transform: 'rotate(45deg) translate(5px,5px)' } : {}} />
             <span style={menuOpen ? { opacity: 0 } : {}} />
             <span style={menuOpen ? { transform: 'rotate(-45deg) translate(5px,-5px)' } : {}} />
           </button>
-
           <AnimatePresence>
             {menuOpen && (
-              <motion.ul
-                className="mobile-menu"
-                initial={{ opacity: 0, y: -8, scale: .97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: .97 }}
-                transition={{ duration: .14 }}
-              >
+              <motion.ul className="mobile-menu" initial={{ opacity: 0, y: -8, scale: .97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: .97 }} transition={{ duration: .14 }}>
                 {NAV_ITEMS.map(item => (
                   <li key={item} className="mobile-item" onClick={() => scrollTo(item)}>{item}</li>
                 ))}
@@ -345,9 +302,7 @@ export default function App() {
             <div className="about-layout">
               <div>
                 <p className="about-eyebrow"><span className="eyebrow">Our Philosophy</span></p>
-                <h2 className="about-title">
-                  Why we are the right partner
-                </h2>
+                <h2 className="about-title">Why we are the right partner</h2>
                 <div className="about-rule" />
                 <p className="about-body">We are your strategic technical partner, dedicated to growing alongside your business. Beyond solving immediate IT challenges, we design and deploy scalable infrastructure, robust security frameworks, and custom automation tools that propel your operations forward.</p>
               </div>
@@ -373,12 +328,13 @@ export default function App() {
               <h2 className="sec-title">Request a Free Audit</h2>
               <div className="sec-rule" />
             </div>
-            <div className="contact-form">
-              <input type="text" placeholder="Name" className="contact-input" />
-              <input type="email" placeholder="Email" className="contact-input" />
-              <textarea placeholder="Message" className="contact-input" rows="5" />
-              <button type="submit" className="contact-submit">Submit</button>
-            </div>
+            {/* UPDATED FORM */}
+            <form className="contact-form" onSubmit={handleSubmit}>
+              <input type="text" name="name" placeholder="Name" className="contact-input" required value={formData.name} onChange={handleInputChange} />
+              <input type="email" name="email" placeholder="Email" className="contact-input" required value={formData.email} onChange={handleInputChange} />
+              <textarea name="message" placeholder="Message" className="contact-input" rows="5" required value={formData.message} onChange={handleInputChange} />
+              <button type="submit" className="contact-submit">{formStatus}</button>
+            </form>
           </motion.div>
         </section>
       </div>
@@ -396,15 +352,7 @@ export default function App() {
       </footer>
 
       {!isMobile && (
-        <motion.div
-          className="cursor"
-          style={{
-            x: cursorX,
-            y: cursorY,
-            translateX: '-50%',
-            translateY: '-50%'
-          }}
-        />
+        <motion.div className="cursor" style={{ x: cursorX, y: cursorY, translateX: '-50%', translateY: '-50%' }} />
       )}
     </>
   );
