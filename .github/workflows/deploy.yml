@@ -5,7 +5,7 @@ on:
       - main
 
 permissions:
-  contents: write  # <--- Change this to write
+  contents: write  # Allows the bot to push changes to the repository
   pages: write
   id-token: write
 
