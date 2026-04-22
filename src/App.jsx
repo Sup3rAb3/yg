@@ -114,7 +114,7 @@ export default function App() {
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Syne:wght@700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Syne:wght@700;800&display=swap"
         rel="stylesheet"
       />
 
@@ -123,7 +123,7 @@ export default function App() {
         html { scroll-behavior: smooth; overflow-x: hidden; }
 
         body {
-          font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: 'Montserrat', sans-serif;
           background: #f4f4ef;
           color: #111;
           overflow-x: hidden;
