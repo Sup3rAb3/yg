@@ -153,10 +153,28 @@ export default function App() {
           vertical-align: middle;
           position: relative;
           top: -0.05em;
-          /* Negative margin pulls the image into the text to compensate for inherent PNG padding */
-          margin: 0 -6px; 
+          margin: 0 -2px; 
         }
         
+        /* --- Underline Style --- 
+          Replaces the scribble effect with a clean underline
+        */
+        .hero-h1-underline {
+          position: relative;
+          display: inline-block;
+          color: #facc15;
+        }
+        .hero-h1-underline::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 2px;
+          width: 100%;
+          height: 3px;
+          background: #000;
+          border-radius: 99px;
+        }
+
         .nav-links { display: flex; gap: 2px; list-style: none; }
         .nav-link { padding: 8px 15px; border-radius: 99px; font-size: 13.5px; font-weight: 600; color: #333; transition: background .15s, color .15s; white-space: nowrap; cursor: pointer; }
         .nav-link:hover { background: #facc15; color: #000; }
@@ -180,7 +198,6 @@ export default function App() {
         .hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
         .eyebrow { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; background: #fef3c7; padding: 5px 13px; border-radius: 99px; }
         .hero-h1 { font-weight: 800; font-size: clamp(1.9rem, 5vw, 3.4rem); line-height: 1.1; color: #0a0a0a; letter-spacing: -.025em; text-transform: uppercase; }
-        .hero-h1-choose { color: #facc15; }
         .hero-sub { font-size: clamp(14px, 1.8vw, 16px); color: #555; line-height: 1.75; max-width: 480px; }
         .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
         .btn-y { padding: 12px 26px; border-radius: 99px; background: #facc15; color: #000; font-weight: 700; font-size: 13.5px; border: none; font-family: inherit; transition: background .15s, color .15s, transform .12s; cursor: pointer; }
@@ -289,7 +306,7 @@ export default function App() {
             <div className="hero-inner">
               <span className="eyebrow">YOU ARE IN THE RIGHT PLACE!</span>
               <h1 className="hero-h1">
-                <span className="hero-h1-choose">Choose</span> <img src={logo} alt="Yellow Gray" className="inline-logo" />
+                <span className="hero-h1-underline">Choose</span> <img src={logo} alt="Yellow Gray" className="inline-logo" />
               </h1>
               <p className="hero-sub">Focus on growth, let us manage the tech. We provide managed support, custom software development, and hardware solutions for small to medium businesses.</p>
               <div className="btn-row">
