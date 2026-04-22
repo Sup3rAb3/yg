@@ -129,7 +129,7 @@ export default function App() {
           -webkit-font-smoothing: antialiased;
         }
 
-        button, a, li, .nav-link, .mobile-item, .btn-y, .btn-outline, .contact-submit, .hamburger {
+        button, a, li, .nav-link, .mobile-item, .btn-y, .btn-outline, .contact-submit, .hamburger, .contact-input, textarea.contact-input, .footer-links, .footer-copy {
           cursor: none !important;
         }
 
@@ -137,8 +137,19 @@ export default function App() {
 
         .nav { position: sticky; top: 0; z-index: 100; background: rgba(244,244,239,0.9); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(0,0,0,0.08); }
         .nav-inner { max-width: 1080px; margin: 0 auto; padding: 0 20px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: relative; }
-        .nav-logo-btn { background: none; border: none; padding: 0; display: flex; }
-        .nav-logo { height: 34px; width: auto; }
+        
+        .nav-logo-btn { background: none; border: none; padding: 0; display: flex; align-items: center; justify-content: center; }
+        .nav-logo { height: 32px; width: auto; display: block; }
+        
+        /* Updated larger inline logo class */
+        .inline-logo {
+          height: 1.0em;
+          vertical-align: middle;
+          position: relative;
+          top: -0.05em;
+          margin: 0 8px;
+        }
+        
         .nav-links { display: flex; gap: 2px; list-style: none; }
         .nav-link { padding: 8px 15px; border-radius: 99px; font-size: 13.5px; font-weight: 600; color: #333; transition: background .15s, color .15s; white-space: nowrap; }
         .nav-link:hover { background: #facc15; color: #000; }
@@ -162,7 +173,6 @@ export default function App() {
         .hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
         .eyebrow { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; background: #fef3c7; padding: 5px 13px; border-radius: 99px; }
         .hero-h1 { font-weight: 800; font-size: clamp(1.9rem, 5vw, 3.4rem); line-height: 1.1; color: #0a0a0a; letter-spacing: -.025em; text-transform: uppercase; }
-        .hero-h1 .accent { color: #f59e0b; }
         .hero-sub { font-size: clamp(14px, 1.8vw, 16px); color: #555; line-height: 1.75; max-width: 480px; }
         .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
         .btn-y { padding: 12px 26px; border-radius: 99px; background: #facc15; color: #000; font-weight: 700; font-size: 13.5px; border: none; font-family: inherit; transition: background .15s, color .15s, transform .12s; }
@@ -270,7 +280,9 @@ export default function App() {
           <motion.div className="card card-pad" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5, ease: 'easeOut' }}>
             <div className="hero-inner">
               <span className="eyebrow">IT Solutions · Lusaka, Zambia</span>
-              <h1 className="hero-h1">Choose <span className="accent">Yellow Gray</span></h1>
+              <h1 className="hero-h1">
+                Choose <img src={logo} alt="Yellow Gray" className="inline-logo" />
+              </h1>
               <p className="hero-sub">We specialize in providing tailored IT solutions for small to large businesses, and growing organizations.</p>
               <div className="btn-row">
                 <button className="btn-y" onClick={() => scrollTo('Contact Us')}>Contact Us</button>
@@ -308,7 +320,9 @@ export default function App() {
             <div className="about-layout">
               <div>
                 <p className="about-eyebrow">Who We Are</p>
-                <h2 className="about-title">Why Choose Yellow Gray</h2>
+                <h2 className="about-title">
+                  Why Choose <img src={logo} alt="Yellow Gray" className="inline-logo" />
+                </h2>
                 <div className="about-rule" />
                 <p className="about-body">Based in Lusaka, Zambia, we're a passionate team dedicated to making technology work for you.</p>
               </div>
