@@ -24,7 +24,7 @@ const servicesData = [
   },
   {
     title: 'Supply of IT Equipment',
-    desc: 'Strategic sourcing and setup of enterprise-grade IT equipment for growing offices and schools.',
+    desc: 'Strategic sourcing and setup of enterprise-grade IT equipment for growing businesses.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
         <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
@@ -33,7 +33,7 @@ const servicesData = [
   },
   {
     title: 'Device Repair & Support',
-    desc: 'Professional diagnostics and repairs to ensure your team never stays offline for long.',
+    desc: 'Professional diagnostics and repairs to ensure your team is back online as soon as possible.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
         <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/>
@@ -304,7 +304,10 @@ export default function App() {
                 <p className="about-eyebrow"><span className="eyebrow">Our Philosophy</span></p>
                 <h2 className="about-title">Why we are the right partner</h2>
                 <div className="about-rule" />
-                <p className="about-body">We are your strategic technical partner, dedicated to growing alongside your business. Beyond solving immediate IT challenges, we design and deploy scalable infrastructure, robust security frameworks, and custom automation tools that propel your operations forward.</p>
+                <p className="about-body">We believe technology should make running your business easier, not harder. 
+                                        That’s why we work closely with you to understand your goals, solve everyday IT challenges, 
+                                        and build reliable systems that support your growth. From security and infrastructure 
+                                        to smart automation, we’re here to help your business move forward with confidence.</p>
               </div>
               <div className="about-grid">
                 {aboutCardsData.map((a, i) => (
