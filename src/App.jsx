@@ -79,7 +79,6 @@ export default function App() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Smooth cursor tracking (prevents jitter)
   useEffect(() => {
     if (isMobile) return;
 
@@ -110,11 +109,10 @@ export default function App() {
 
   return (
     <>
-      {/* Fonts */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Syne:wght@700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
         rel="stylesheet"
       />
 
@@ -123,7 +121,7 @@ export default function App() {
         html { scroll-behavior: smooth; overflow-x: hidden; }
 
         body {
-          font-family: 'Montserrat', sans-serif;
+          font-family: 'Inter', sans-serif;
           background: #f4f4ef;
           color: #111;
           overflow-x: hidden;
@@ -131,14 +129,12 @@ export default function App() {
           -webkit-font-smoothing: antialiased;
         }
 
-        /* Force hide default cursor everywhere */
         button, a, li, .nav-link, .mobile-item, .btn-y, .btn-outline, .contact-submit, .hamburger {
           cursor: none !important;
         }
 
         .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
 
-        /* Navbar */
         .nav { position: sticky; top: 0; z-index: 100; background: rgba(244,244,239,0.9); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(0,0,0,0.08); }
         .nav-inner { max-width: 1080px; margin: 0 auto; padding: 0 20px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: relative; }
         .nav-logo-btn { background: none; border: none; padding: 0; display: flex; }
@@ -157,7 +153,6 @@ export default function App() {
           .hamburger { display: flex; }
         }
 
-        /* Sections & Cards */
         .hero-section { padding: 44px 0 32px; }
         .section { padding: 0 0 32px; }
         .card { background: #fff; border-radius: 22px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 18px rgba(0,0,0,0.05); }
@@ -166,7 +161,7 @@ export default function App() {
 
         .hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
         .eyebrow { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; background: #fef3c7; padding: 5px 13px; border-radius: 99px; }
-        .hero-h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.9rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.1; color: #0a0a0a; letter-spacing: -.025em; }
+        .hero-h1 { font-weight: 800; font-size: clamp(1.9rem, 5vw, 3.4rem); line-height: 1.1; color: #0a0a0a; letter-spacing: -.025em; text-transform: uppercase; }
         .hero-h1 .accent { color: #f59e0b; }
         .hero-sub { font-size: clamp(14px, 1.8vw, 16px); color: #555; line-height: 1.75; max-width: 480px; }
         .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
@@ -177,7 +172,7 @@ export default function App() {
 
         .sec-head { text-align: center; margin-bottom: 32px; }
         .sec-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; margin-bottom: 8px; }
-        .sec-title { font-family: 'Syne', sans-serif; font-size: clamp(1.55rem, 3.5vw, 2.25rem); font-weight: 800; color: #0a0a0a; letter-spacing: -.02em; line-height: 1.15; }
+        .sec-title { font-weight: 800; font-size: clamp(1.55rem, 3.5vw, 2.25rem); color: #0a0a0a; letter-spacing: -.02em; line-height: 1.15; text-transform: uppercase; }
         .sec-rule { width: 36px; height: 3px; background: #facc15; border-radius: 99px; margin: 10px auto 0; }
 
         .srv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
@@ -192,7 +187,7 @@ export default function App() {
         .about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
         @media (max-width: 680px) { .about-layout { grid-template-columns: 1fr; gap: 24px; } }
         .about-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #92400e; margin-bottom: 8px; }
-        .about-title { font-family: 'Syne', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; color: #0a0a0a; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 4px; }
+        .about-title { font-weight: 800; font-size: clamp(1.4rem, 3vw, 2rem); color: #0a0a0a; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 4px; text-transform: uppercase; }
         .about-rule { width: 36px; height: 3px; background: #facc15; border-radius: 99px; margin: 10px 0 16px; }
         .about-body { font-size: 14.5px; color: #555; line-height: 1.75; }
         .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -219,7 +214,6 @@ export default function App() {
         .footer-link:hover { color: #facc15; }
         .footer-copy { font-size: 11.5px; color: #3a3a3a; }
 
-        /* Fixed Custom Cursor */
         .cursor {
           position: fixed;
           top: 0;
@@ -235,7 +229,6 @@ export default function App() {
         }
       `}</style>
 
-      {/* Navbar */}
       <header className="nav" id="navbar">
         <div className="nav-inner">
           <button className="nav-logo-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
@@ -272,7 +265,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Hero */}
       <div id="home" className="wrap">
         <section className="hero-section">
           <motion.div className="card card-pad" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5, ease: 'easeOut' }}>
@@ -289,7 +281,6 @@ export default function App() {
         </section>
       </div>
 
-      {/* Services */}
       <div id="services" className="wrap">
         <section className="section">
           <motion.div className="card card-pad" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
@@ -311,7 +302,6 @@ export default function App() {
         </section>
       </div>
 
-      {/* About Us */}
       <div id="aboutus" className="wrap">
         <section className="section">
           <motion.div className="card card-pad" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
@@ -336,7 +326,6 @@ export default function App() {
         </section>
       </div>
 
-      {/* Contact Us */}
       <div id="contactus" className="wrap">
         <section className="section">
           <motion.div className="card card-pad contact-wrap" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
@@ -355,7 +344,6 @@ export default function App() {
         </section>
       </div>
 
-      {/* Footer */}
       <footer className="footer">
         <div className="footer-inner">
           <img src={whitelogo} alt="Yellow Gray" className="footer-logo" />
@@ -368,7 +356,6 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Custom Cursor - Fixed */}
       {!isMobile && (
         <motion.div
           className="cursor"
