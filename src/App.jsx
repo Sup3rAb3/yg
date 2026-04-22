@@ -153,7 +153,8 @@ export default function App() {
           vertical-align: middle;
           position: relative;
           top: -0.05em;
-          margin: 0 3px; 
+          /* Negative margin pulls the image into the text to compensate for inherent PNG padding */
+          margin: 0 -6px; 
         }
         
         .nav-links { display: flex; gap: 2px; list-style: none; }
