@@ -6,7 +6,7 @@ import whitelogo from './assets/logo_white.png';
 const servicesData = [
   {
     title: 'IT Consultation & Support',
-    desc: 'Expert IT consultation and support to optimize your technology and resolve issues efficiently.',
+    desc: 'We act as your outsourced IT department, providing maintenance, security, and infrastructure support.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -14,8 +14,8 @@ const servicesData = [
     ),
   },
   {
-    title: 'Web Development & Hosting',
-    desc: 'Modern, secure web apps and hosting to elevate your online presence and reliability.',
+    title: 'App & Web Development',
+    desc: 'Custom software, web applications, and automation tools built to streamline your business workflows.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
         <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
@@ -24,7 +24,7 @@ const servicesData = [
   },
   {
     title: 'Supply of IT Equipment',
-    desc: 'Dependable procurement and provisioning of core IT equipment for businesses and schools.',
+    desc: 'Strategic sourcing and setup of enterprise-grade IT equipment for growing offices and schools.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
         <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
@@ -32,8 +32,8 @@ const servicesData = [
     ),
   },
   {
-    title: 'Device Repair & Maintenance',
-    desc: 'Fast, professional device repair and maintenance to keep your operations running smoothly.',
+    title: 'Device Repair & Support',
+    desc: 'Professional diagnostics and repairs to ensure your team never stays offline for long.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
         <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/>
@@ -285,13 +285,13 @@ export default function App() {
         <section className="hero-section">
           <motion.div className="card card-pad" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5, ease: 'easeOut' }}>
             <div className="hero-inner">
-              <span className="eyebrow">IT Solutions · Lusaka, Zambia</span>
+              <span className="eyebrow">YOU ARE IN THE RIGHT PLACE!</span>
               <h1 className="hero-h1">
                 Choose <img src={logo} alt="Yellow Gray" className="inline-logo" />
               </h1>
-              <p className="hero-sub">We specialize in providing tailored IT solutions for small to large businesses, and growing organizations.</p>
+              <p className="hero-sub">Focus on growth, let us manage the tech. We provide managed support, custom software development, and hardware solutions for small to medium businesses.</p>
               <div className="btn-row">
-                <button className="btn-y" onClick={() => scrollTo('Contact Us')}>Contact Us</button>
+                <button className="btn-y" onClick={() => scrollTo('Contact Us')}>Request Free Audit</button>
                 <button className="btn-outline" onClick={() => scrollTo('Services')}>Our Services</button>
               </div>
             </div>
@@ -303,8 +303,8 @@ export default function App() {
         <section className="section">
           <motion.div className="card card-pad" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
             <div className="sec-head">
-              <p className="sec-eyebrow">What We Do</p>
-              <h2 className="sec-title">Our Core Services</h2>
+              <p className="sec-eyebrow"><span className="eyebrow">Solutions</span></p>
+              <h2 className="sec-title">Managed & Bespoke Services</h2>
               <div className="sec-rule" />
             </div>
             <div className="srv-grid">
@@ -325,12 +325,12 @@ export default function App() {
           <motion.div className="card card-pad" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
             <div className="about-layout">
               <div>
-                <p className="about-eyebrow">Who We Are</p>
+                <p className="about-eyebrow"><span className="eyebrow">Our Philosophy</span></p>
                 <h2 className="about-title">
-                  Why Choose <img src={logo} alt="Yellow Gray" className="inline-logo" />
+                  Why we are the right partner
                 </h2>
                 <div className="about-rule" />
-                <p className="about-body">Based in Lusaka, Zambia, we're a passionate team dedicated to making technology work for you.</p>
+                <p className="about-body">We are your strategic technical partner, dedicated to growing alongside your business. Beyond solving immediate IT challenges, we design and deploy scalable infrastructure, robust security frameworks, and custom automation tools that propel your operations forward.</p>
               </div>
               <div className="about-grid">
                 {aboutCardsData.map((a, i) => (
@@ -350,8 +350,8 @@ export default function App() {
         <section className="section">
           <motion.div className="card card-pad contact-wrap" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .42 }}>
             <div className="sec-head" style={{ marginBottom: 0 }}>
-              <p className="sec-eyebrow">Reach Out</p>
-              <h2 className="sec-title">Get in Touch</h2>
+              <p className="sec-eyebrow"><span className="eyebrow">reach out</span></p>
+              <h2 className="sec-title">Request a Free Audit</h2>
               <div className="sec-rule" />
             </div>
             <div className="contact-form">
