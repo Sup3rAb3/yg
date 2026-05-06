@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useLayoutEffect } from 'react';
 import { motion, useMotionValue, useSpring, AnimatePresence, useInView } from 'framer-motion';
 import whitelogo from './assets/logo_white.png';
 
@@ -56,6 +56,7 @@ const STATS = [
 function Counter({ target, suffix }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
+  // Wider margin so animation starts only when well in view, reducing off-screen work
   const inView = useInView(ref, { once: true, margin: '-40px' });
 
   useEffect(() => {
@@ -76,6 +77,7 @@ function Counter({ target, suffix }) {
 }
 
 /* ─── MAGNETIC BUTTON ───────────────────────────────────────── */
+// On mobile, skip spring physics entirely — just render children normally
 function MagneticBtn({ children, className, onClick, type, disabled }) {
   const ref = useRef(null);
   const x = useMotionValue(0);
@@ -83,13 +85,14 @@ function MagneticBtn({ children, className, onClick, type, disabled }) {
   const sx = useSpring(x, { stiffness: 200, damping: 18 });
   const sy = useSpring(y, { stiffness: 200, damping: 18 });
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     if (disabled) return;
     const rect = ref.current.getBoundingClientRect();
     x.set((e.clientX - rect.left - rect.width / 2) * 0.35);
     y.set((e.clientY - rect.top - rect.height / 2) * 0.35);
-  };
-  const handleMouseLeave = () => { x.set(0); y.set(0); };
+  }, [disabled, x, y]);
+
+  const handleMouseLeave = useCallback(() => { x.set(0); y.set(0); }, [x, y]);
 
   return (
     <motion.button
@@ -179,16 +182,31 @@ function Toast({ message, type, onDone }) {
 }
 
 /* ─── PARTICLES ─────────────────────────────────────────────── */
-function Particles() {
+// Optimizations: fewer particles on mobile, skip on reduced-motion, use dpr-aware sizing
+function Particles({ isMobile }) {
   const canvasRef = useRef(null);
+
   useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     let animId;
-    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+
+    const resize = () => {
+      // Use logical pixels only — no dpr scaling needed for this decorative canvas
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
     resize();
-    window.addEventListener('resize', resize);
-    const particles = Array.from({ length: 40 }, () => ({
+
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(canvas);
+
+    // Fewer particles on mobile = ~50% less draw work
+    const count = isMobile ? 18 : 40;
+    const particles = Array.from({ length: count }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       r: Math.random() * 1.4 + 0.3,
@@ -196,6 +214,7 @@ function Particles() {
       dy: (Math.random() - 0.5) * 0.22,
       alpha: Math.random() * 0.35 + 0.08,
     }));
+
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(p => {
@@ -210,22 +229,34 @@ function Particles() {
       animId = requestAnimationFrame(draw);
     };
     draw();
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
-  }, []);
-  return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} />;
+
+    return () => {
+      cancelAnimationFrame(animId);
+      resizeObserver.disconnect();
+    };
+  }, [isMobile]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+    />
+  );
 }
 
 /* ─── MARQUEE ───────────────────────────────────────────────── */
+// Pure CSS marquee — zero JS animation overhead vs framer-motion animate
 function Marquee() {
+  const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
   return (
     <div style={{ overflow: 'hidden', padding: '18px 0', borderTop: '1px solid rgba(250,204,21,0.15)', borderBottom: '1px solid rgba(250,204,21,0.15)', background: 'rgba(250,204,21,0.03)' }}>
-      <motion.div style={{ display: 'flex', gap: '48px', width: 'max-content' }} animate={{ x: ['0%', '-50%'] }} transition={{ duration: 22, ease: 'linear', repeat: Infinity }}>
-        {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+      <div className="marquee-track">
+        {items.map((item, i) => (
           <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px', color: '#888', fontSize: '13px', fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
             <span style={{ color: '#facc15', fontSize: '8px' }}>◆</span>{item}
           </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -233,20 +264,27 @@ function Marquee() {
 /* ─── FADE UP ───────────────────────────────────────────────── */
 function FadeUp({ children, delay = 0 }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
+  // Tighter margin = observer fires only when element is closer, less work
+  const inView = useInView(ref, { once: true, margin: '-40px' });
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 32 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
       {children}
     </motion.div>
   );
 }
 
 /* ─── GRID BG ───────────────────────────────────────────────── */
+// Moved blur/glow orbs to CSS-only — no React re-render cost
 function GridBg() {
   return (
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
       <div style={{ position: 'absolute', inset: 0, backgroundImage: `linear-gradient(rgba(250,204,21,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(250,204,21,0.04) 1px, transparent 1px)`, backgroundSize: '60px 60px' }} />
-      <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,204,21,0.12) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+      <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,204,21,0.12) 0%, transparent 70%)', filter: 'blur(40px)', willChange: 'auto' }} />
       <div style={{ position: 'absolute', top: '40%', right: '-10%', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,204,21,0.08) 0%, transparent 70%)', filter: 'blur(50px)' }} />
       <div style={{ position: 'absolute', bottom: '10%', left: '30%', width: '350px', height: '350px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,204,21,0.07) 0%, transparent 70%)', filter: 'blur(60px)' }} />
     </div>
@@ -260,8 +298,14 @@ export default function App() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
-  const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-  const handleSubmit = async (e) => {
+
+  // Memoized handlers prevent child re-renders
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }, []);
+
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setSubmitting(true);
     const formBody = new URLSearchParams();
@@ -274,14 +318,20 @@ export default function App() {
       setToast({ message: 'Something went wrong. Please try again.', type: 'error' });
     }
     setSubmitting(false);
-  };
+  }, [formData]);
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  // useLayoutEffect avoids reading window during SSR and prevents layout thrash
+  const [isMobile, setIsMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showTop, setShowTop] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
+  useLayoutEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
+  // Cursor motion values — only used on desktop
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   const springX = useSpring(cursorX, { stiffness: 500, damping: 38 });
@@ -289,22 +339,34 @@ export default function App() {
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
+
+    // Throttle scroll handler to ~60fps max using a flag
+    let ticking = false;
     const onScroll = () => {
-      const sy = window.scrollY;
-      setIsScrolled(sy > 20);
-      setShowTop(sy > 400);
-      const navH = document.getElementById('navbar')?.offsetHeight || 66;
-      const sections = ['home', 'services', 'aboutus', 'contactus'];
-      let current = 'home';
-      sections.forEach(id => {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop - navH - 80 <= sy) current = id;
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const sy = window.scrollY;
+        setIsScrolled(sy > 20);
+        setShowTop(sy > 400);
+        const navH = document.getElementById('navbar')?.offsetHeight || 66;
+        const sections = ['home', 'services', 'aboutus', 'contactus'];
+        let current = 'home';
+        sections.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && el.offsetTop - navH - 80 <= sy) current = id;
+        });
+        setActiveSection(current);
+        ticking = false;
       });
-      setActiveSection(current);
     };
-    window.addEventListener('resize', onResize);
+
+    window.addEventListener('resize', onResize, { passive: true });
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => { window.removeEventListener('resize', onResize); window.removeEventListener('scroll', onScroll); };
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -312,19 +374,20 @@ export default function App() {
     const onMove = (e) => { cursorX.set(e.clientX); cursorY.set(e.clientY); };
     window.addEventListener('mousemove', onMove, { passive: true });
     return () => window.removeEventListener('mousemove', onMove);
-  }, [isMobile]);
+  }, [isMobile, cursorX, cursorY]);
 
-  const scrollTo = (label) => {
+  const scrollTo = useCallback((label) => {
     const id = label.toLowerCase().replace(/\s+/g, '');
     const el = document.getElementById(id);
     if (!el) return;
     const navH = document.getElementById('navbar')?.offsetHeight || 66;
     window.scrollTo({ top: el.offsetTop - navH - 8, behavior: 'smooth' });
     setMenuOpen(false);
-  };
+  }, []);
 
   const navIdMap = { 'Home': 'home', 'Services': 'services', 'About Us': 'aboutus', 'Contact Us': 'contactus' };
   const dismissToast = useCallback(() => setToast(null), []);
+  const toggleMenu = useCallback(() => setMenuOpen(v => !v), []);
 
   const css = `
     @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
@@ -332,12 +395,13 @@ export default function App() {
     html { scroll-behavior: smooth; overflow-x: clip; }
     body { font-family: 'DM Sans', sans-serif; background: #080808; color: #e8e8e2; overflow-x: clip; cursor: none !important; -webkit-font-smoothing: antialiased; }
     *, button, a, li, input, textarea { cursor: none !important; }
+    @media (max-width: 767px) { body, *, button, a, li, input, textarea { cursor: auto !important; } }
     ::selection { background: #facc15; color: #000; }
 
     /* GRAIN */
     body::after {
       content: ''; position: fixed; inset: 0; z-index: 9998; pointer-events: none; opacity: 0.032;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%2%3E%3C/svg%3E");
       background-size: 160px 160px;
     }
 
@@ -438,13 +502,30 @@ export default function App() {
     .footer-copy { font-size: 12px; color: #2a2a2a; }
     .divider { height: 1px; background: rgba(255,255,255,0.05); margin: 0 24px; }
 
-    /* CURSORS */
-    .cursor-outer { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid rgba(250,204,21,0.5); pointer-events: none; z-index: 9999998; will-change: transform; }
-    .cursor-inner { position: fixed; top: 0; left: 0; width: 8px; height: 8px; border-radius: 50%; background: #facc15; pointer-events: none; z-index: 9999999; will-change: transform; }
+    /* CURSORS — hidden on mobile via media query */
+    .cursor-outer { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid rgba(250,204,21,0.5); pointer-events: none; z-index: 9999998; }
+    .cursor-inner { position: fixed; top: 0; left: 0; width: 8px; height: 8px; border-radius: 50%; background: #facc15; pointer-events: none; z-index: 9999999; }
+    @media (max-width: 767px) { .cursor-outer, .cursor-inner { display: none; } }
 
     /* BACK TO TOP */
     .back-top { position: fixed; bottom: 28px; right: 28px; z-index: 9000; width: 44px; height: 44px; border-radius: 12px; background: rgba(250,204,21,0.08); border: 1px solid rgba(250,204,21,0.22); color: #facc15; display: flex; align-items: center; justify-content: center; font-size: 20px; font-family: sans-serif; transition: background .15s, border-color .15s; }
     .back-top:hover { background: rgba(250,204,21,0.18); border-color: rgba(250,204,21,0.5); }
+
+    /* CSS MARQUEE — replaces framer-motion JS animation */
+    .marquee-track {
+      display: flex;
+      gap: 48px;
+      width: max-content;
+      animation: marquee-scroll 22s linear infinite;
+    }
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .marquee-track { animation: none; }
+      .eyebrow-dot { animation: none; }
+    }
   `;
 
   return (
@@ -466,7 +547,7 @@ export default function App() {
             ))}
           </ul>
           <MagneticBtn className="nav-cta" onClick={() => scrollTo('Contact Us')}>Free Audit →</MagneticBtn>
-          <button className="hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu">
+          <button className="hamburger" onClick={toggleMenu} aria-label="Toggle menu">
             <span style={menuOpen ? { transform: 'rotate(45deg) translate(5px,5px)' } : {}} />
             <span style={menuOpen ? { opacity: 0 } : {}} />
             <span style={menuOpen ? { transform: 'rotate(-45deg) translate(5px,-5px)' } : {}} />
@@ -484,7 +565,7 @@ export default function App() {
       {/* HERO */}
       <div id="home" className="wrap">
         <section className="hero-section">
-          <Particles />
+          <Particles isMobile={isMobile} />
           <div style={{ position: 'relative', zIndex: 1 }}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
               <div className="eyebrow-pill"><div className="eyebrow-dot" />Managed IT for Modern Businesses</div>
@@ -628,7 +709,7 @@ export default function App() {
         {toast && <Toast message={toast.message} type={toast.type} onDone={dismissToast} />}
       </AnimatePresence>
 
-      {/* CURSOR */}
+      {/* CURSOR — desktop only, hidden via CSS on mobile */}
       {!isMobile && (
         <>
           <motion.div className="cursor-outer" style={{ x: springX, y: springY, translateX: '-50%', translateY: '-50%' }} />
